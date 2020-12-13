@@ -1,0 +1,7 @@
+name: NKDonate
+version: ${project.version}
+main: me.kazoku.donate.NKDonatePlugin
+prefix: NKDonate
+authors: [ Kazoku ]
+description: Just a donate plugin
+api-version: 1.16

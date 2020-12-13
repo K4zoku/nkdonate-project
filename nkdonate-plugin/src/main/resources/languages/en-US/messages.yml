@@ -1,0 +1,8 @@
+unknown-command: '&cUnknown command'
+unknown-error: '&cAn error occurred!'
+no-permission: '&cYou don''t have permission to do this'
+too-many-args: '&cToo many arguments'
+too-few-args: '&cToo few arguments'
+only-player: '&cOnly player'
+not-a-number: '&f''{0}'' §cis not a number!'
+reloaded: '&aReloaded {type} successfully'

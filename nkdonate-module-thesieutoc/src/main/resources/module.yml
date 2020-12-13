@@ -1,0 +1,4 @@
+name: TheSieuToc
+version: 1.0.0
+author: [ kazoku ]
+main: me.kazoku.donate.module.topup.thesieutoc.TheSieuTocModule

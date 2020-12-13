@@ -1,0 +1,5 @@
+unknown-command: '&cLệnh không xác định'
+too-many-args: '&cThừa tham số'
+too-few-args: '&cThiếu tham số'
+unknown-error: '&cCó lỗi xảy ra!'
+no-permission: '&cKhông có quyền'

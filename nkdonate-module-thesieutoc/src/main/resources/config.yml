@@ -1,0 +1,23 @@
+APIKey: ''
+APISecret: ''
+
+Card:
+  Type:
+    Viettel: 'Viettel'
+    Vinaphone: 'Vinaphone'
+    Mobifone: 'Mobifone'
+    Vietnamobile: 'Vietnamobile'
+    Vcoin: 'Vcoin'
+    Zing: 'Zing'
+    Gate: 'Gate'
+    Garena: 'Garena'
+  Price:
+    1: '10K'
+    2: '20K'
+    3: '30K'
+    4: '50K'
+    5: '100K'
+    6: '200K'
+    7: '300K'
+    8: '500K'
+    9: '1M'

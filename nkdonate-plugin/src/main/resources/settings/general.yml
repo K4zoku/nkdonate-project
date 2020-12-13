@@ -1,0 +1,6 @@
+locale: 'en-us'
+rewards-profile: 1
+checking-period: 5m
+modules:
+  topup:
+    enabled: ''
