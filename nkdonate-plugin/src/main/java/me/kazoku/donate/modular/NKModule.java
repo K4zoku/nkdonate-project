@@ -8,7 +8,7 @@ import me.kazoku.artxe.security.Hashing;
 import me.kazoku.artxe.utils.JarUtils;
 import me.kazoku.artxe.utils.SimpleWebUtils;
 import me.kazoku.artxe.utils.TTLCache;
-import com.google.gson.JsonParserUpdated;
+import me.kazoku.donate.internal.util.json.JsonParser;
 import org.jetbrains.annotations.NotNull;
 
 public abstract class NKModule extends Module {
@@ -54,7 +54,7 @@ public abstract class NKModule extends Module {
     }
 
     private static JsonObject requestDatabase() {
-        return JsonParserUpdated.parseString(SimpleWebUtils.sendRequest(DATABASE_URL)).getAsJsonObject();
+        return JsonParser.parseString(SimpleWebUtils.sendRequest(DATABASE_URL)).getAsJsonObject();
     }
 
     private static JsonObject getDatabase() {

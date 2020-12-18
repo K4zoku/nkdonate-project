@@ -1,6 +1,15 @@
-locale: 'en-us'
-rewards-profile: 1
-checking-period: 5m
+# /!\ Do not enable if you're not developer
+debug: false
+
+# [?] Change language here
+locale: en-US
+
+# [?] Card checking period (default 1200tick = 60s)
+# [+] Time units support! Can use unit such as tick (no need to add 'tick'), nanosecond (ns),
+#     millisecond (ms), second (s), minute (m), hour (h), day (d). Recommend using tick!
+period: 1200tick
+
 modules:
   topup:
+    # [?] Enable topup module
     enabled: ''

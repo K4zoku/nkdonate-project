@@ -1,18 +1,11 @@
 package me.kazoku.donate.internal.data;
 
 import me.kazoku.artxe.configuration.path.prototype.StringConfigPath;
-import me.kazoku.artxe.configuration.yaml.YamlConfig;
-import me.kazoku.artxe.utils.JarUtils;
-import me.kazoku.donate.NKDonatePlugin;
-import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
-import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-import java.util.Optional;
-import java.util.jar.JarFile;
+import java.util.function.Supplier;
 
-public final class Messages extends MemoryData {
+public final class Messages extends MemoryPathBundle {
 
   public static final StringConfigPath UNKNOWN_COMMAND = new StringConfigPath("unknown-command", "§cUnknown command");
   public static final StringConfigPath UNKNOWN_ERROR = new StringConfigPath("unknown-error", "§cAn error occurred!");
@@ -23,14 +16,38 @@ public final class Messages extends MemoryData {
   public static final StringConfigPath RELOADED = new StringConfigPath("reloaded", "§aReloaded {type} successfully");
   public static final StringConfigPath NAN = new StringConfigPath("not-a-number", "§f'{0}' §cis not a number!");
 
-  public Messages(@NotNull File file) {
+  // flexible file
+  private static final Supplier<File> MESSAGES_FILE = () -> new File(StorageStructure.LOCALE_DIRECTORY.get(), "messages.yml");
+  private static Messages instance;
+
+  private Messages(File file) {
     super(file);
   }
 
-  static void loadLocale(File file) {
-    saveDefault(file,
-        String.format("languages/%s/%s", GeneralSettings.LOCALE.getValue(), file.getName())
-    );
-    new Messages(file);
+  public static Messages getInstance() {
+    return instance == null ? newInstance() : instance;
+  }
+
+  private static Messages newInstance() {
+    File file = MESSAGES_FILE.get();
+    String resourcePath = String.format("languages/%s/%s", GeneralSettings.LOCALE.getValue(), file.getName());
+    boolean save = false;
+    try {
+      saveDefault(file, resourcePath);
+    } catch (NullPointerException e) {
+      save = true;
+    }
+    instance = new Messages(file);
+    if (save) instance.save();
+    return instance;
+  }
+
+  public static void hardReload() {
+    newInstance();
+  }
+
+  public static void softReload() {
+    if (MESSAGES_FILE.get().exists()) getInstance().getConfig().reloadConfig();
+    else hardReload();
   }
 }

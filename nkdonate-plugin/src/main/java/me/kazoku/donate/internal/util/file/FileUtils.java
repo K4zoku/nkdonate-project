@@ -25,7 +25,7 @@ public class FileUtils {
         is.close();
     }
 
-    public static boolean createIfNotExists(File file) {
+    public static boolean create(File file) {
         try {
             return file.exists() || file.createNewFile();
         } catch (IOException e) {
@@ -33,7 +33,7 @@ public class FileUtils {
         }
     }
 
-    public static boolean mkDirsIfNotExists(File directory) {
+    public static boolean mkdirs(File directory) {
         return directory.exists() || directory.mkdirs();
     }
 

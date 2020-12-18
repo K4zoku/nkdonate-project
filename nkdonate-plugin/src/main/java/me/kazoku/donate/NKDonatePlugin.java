@@ -3,11 +3,13 @@ package me.kazoku.donate;
 import me.kazoku.artxe.bukkit.chat.ChatInput;
 import me.kazoku.artxe.bukkit.command.CommandManager;
 import me.kazoku.artxe.bukkit.command.extra.CommandFeedback;
+import me.kazoku.artxe.utils.PlaceholderCache;
 import me.kazoku.donate.bukkit.command.NKDonateCommand;
 import me.kazoku.donate.external.api.NKDonateAPI;
 import me.kazoku.donate.internal.data.GeneralSettings;
 import me.kazoku.donate.internal.data.Messages;
 import me.kazoku.donate.internal.data.StorageStructure;
+import me.kazoku.donate.internal.data.UISettings;
 import me.kazoku.donate.internal.ui.ChatUI;
 import me.kazoku.donate.internal.util.logging.CustomLogger;
 import me.kazoku.donate.internal.util.logging.DebugWriter;
@@ -21,7 +23,8 @@ import org.simpleyaml.configuration.serialization.ConfigurationSerialization;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.util.Map;
+import java.util.Optional;
 import java.util.logging.Level;
 
 public final class NKDonatePlugin extends JavaPlugin {
@@ -32,46 +35,14 @@ public final class NKDonatePlugin extends JavaPlugin {
   private CardQueue queue;
   private ChatInput chatInput;
   private CustomLogger customLogger;
+  private static final PlaceholderCache PLACEHOLDER_CACHE = new PlaceholderCache();
 
   public static NKDonatePlugin getInstance() {
     return instance;
   }
 
-  private void initEnvironment() {
-    ConfigurationSerialization.registerClass(ChatUI.class);
-
-    instance = this;
-
-    api = new NKDonateAPI() {
-      @Override
-      public BukkitTask runTaskAsync(Runnable runnable) {
-        return Bukkit.getScheduler().runTaskAsynchronously(instance, runnable);
-      }
-
-      @Override
-      public NKModuleManager getModuleManager() {
-        return null;
-      }
-    };
-
-
-    this.customLogger = new CustomLogger(getLogger(), false);
-    try {
-      getLogger().addHandler(
-              new DebugWriter(
-                      new File(StorageStructure.LOGS_DIRECTORY, "debug.log"),
-                      true
-              )
-      );
-    } catch (IOException e) {
-      getLogger().log(Level.SEVERE, "An error occurred: ", e);
-    }
-    GeneralSettings.loadSettings(new File(StorageStructure.SETTINGS_DIRECTORY, "general.yml"));
-    chatInput = new ChatInput(this);
-
-    getCustomLogger().setDebug(GeneralSettings.DEBUG.getValue());
-    moduleManager = new NKModuleManager(this);
-    queue = new CardQueue(new File(StorageStructure.DATA_DIRECTORY, "queue.dat"));
+  public static PlaceholderCache getPlaceholderCache() {
+    return PLACEHOLDER_CACHE;
   }
 
   public void loadModules() {
@@ -141,6 +112,45 @@ public final class NKDonatePlugin extends JavaPlugin {
 
   public CustomLogger getCustomLogger() {
     return customLogger;
+  }
+
+  private void initEnvironment() {
+    ConfigurationSerialization.registerClass(ChatUI.class);
+
+    instance = this;
+
+    api = new NKDonateAPI() {
+      @Override
+      public BukkitTask runTaskAsync(Runnable runnable) {
+        return Bukkit.getScheduler().runTaskAsynchronously(instance, runnable);
+      }
+
+      @Override
+      public NKModuleManager getModuleManager() {
+        return null;
+      }
+    };
+
+
+    this.customLogger = new CustomLogger(getLogger(), false);
+    try {
+      getLogger().addHandler(
+          new DebugWriter(
+              new File(StorageStructure.LOGS_DIRECTORY, "debug.log"),
+              true
+          )
+      );
+    } catch (IOException e) {
+      getLogger().log(Level.SEVERE, "An error occurred: ", e);
+    }
+    GeneralSettings.hardReload();
+    Messages.hardReload();
+    UISettings.hardReload();
+    chatInput = new ChatInput(this);
+
+    getCustomLogger().setDebug(GeneralSettings.DEBUG.getValue());
+    moduleManager = new NKModuleManager(this);
+    queue = new CardQueue(new File(StorageStructure.DATA_DIRECTORY, "queue.dat"));
   }
 
 }

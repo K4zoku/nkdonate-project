@@ -1,24 +1,24 @@
 package me.kazoku.donate.internal.ui;
 
 import me.kazoku.artxe.utils.PlaceholderCache;
+import me.kazoku.donate.NKDonatePlugin;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.simpleyaml.configuration.serialization.ConfigurationSerializable;
 import org.simpleyaml.configuration.serialization.SerializableAs;
 
 import java.util.*;
 
-import static me.kazoku.donate.internal.data.MemoryData.colorize;
+import static me.kazoku.donate.internal.util.ChatColorUtils.colorize;
 
 @SerializableAs("ChatUI")
 public final class ChatUI implements UI, ConfigurationSerializable, Cloneable {
 
-  private static final PlaceholderCache PLACEHOLDER_CACHE = new PlaceholderCache();
+  private static final PlaceholderCache PLACEHOLDER_CACHE = NKDonatePlugin.getPlaceholderCache();
 
   private final Set<Player> players = new HashSet<>();
   private String text;

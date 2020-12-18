@@ -2,35 +2,29 @@ package me.kazoku.donate.internal.data.prototype;
 
 import me.kazoku.artxe.configuration.general.Config;
 import me.kazoku.artxe.configuration.path.AdvancedConfigPath;
-import me.kazoku.artxe.utils.time.TimeUtils;
+import me.kazoku.artxe.converter.time.object.Time;
+import me.kazoku.artxe.converter.time.prototype.TickConverter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Objects;
+public class TimeConfigPath extends AdvancedConfigPath<Object, Time> {
 
-public class TimeConfigPath extends AdvancedConfigPath<String, Long> {
-
-  public TimeConfigPath(@NotNull String path, @Nullable Object def) {
-    super(path, TimeUtils.toTick(def));
+  public TimeConfigPath(@NotNull String path, @NotNull Object def) {
+    super(path, TickConverter.convertToTick(def));
   }
 
   @Override
-  public @Nullable String getFromConfig(@NotNull Config config) {
-    return config.getConfig().getString(getPath());
+  public @Nullable Object getFromConfig(@NotNull Config config) {
+    return config.getConfig().get(getPath());
   }
 
   @Override
-  public @Nullable Long convert(@NotNull String rawValue) {
-    return TimeUtils.toTick(rawValue);
+  public @Nullable Time convert(@NotNull Object rawValue) {
+    return TickConverter.convertToTick(rawValue);
   }
 
   @Override
-  public @Nullable String convertToRaw(@NotNull Long value) {
-    return value + "tick";
-  }
-
-  @Override
-  public @NotNull Long getValue() {
-    return Objects.requireNonNull(super.getValue());
+  public @Nullable Object convertToRaw(@NotNull Time value) {
+    return value.toString();
   }
 }

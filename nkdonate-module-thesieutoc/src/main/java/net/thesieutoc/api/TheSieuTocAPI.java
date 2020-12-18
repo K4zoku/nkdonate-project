@@ -2,11 +2,12 @@ package net.thesieutoc.api;
 
 import com.google.gson.JsonObject;
 import me.kazoku.artxe.utils.SimpleWebUtils;
-import com.google.gson.JsonParserUpdated;
+import me.kazoku.donate.internal.util.json.JsonParser;
 import org.jetbrains.annotations.NotNull;
 import org.simpleyaml.utils.Validate;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
 
 public class TheSieuTocAPI {
 
@@ -36,7 +37,7 @@ public class TheSieuTocAPI {
         params.put("menhgia", price);
         params.put("seri", serial);
         params.put("mathe", pin);
-        return JsonParserUpdated.parseString(SimpleWebUtils.sendGet(TRANSACTION_URL, params)).getAsJsonObject();
+        return JsonParser.parseString(SimpleWebUtils.sendGet(TRANSACTION_URL, params)).getAsJsonObject();
     }
 
     public JsonObject checkTransaction(@NotNull String transactionId) {
@@ -44,7 +45,7 @@ public class TheSieuTocAPI {
         Map<String, String> params = new HashMap<>();
         updateApiParams(params);
         params.put("transaction_id", transactionId);
-        return JsonParserUpdated.parseString(SimpleWebUtils.sendGet(CHECKING_URL, params)).getAsJsonObject();
+        return JsonParser.parseString(SimpleWebUtils.sendGet(CHECKING_URL, params)).getAsJsonObject();
     }
 
     private void updateApiParams(Map<String, String> params) {

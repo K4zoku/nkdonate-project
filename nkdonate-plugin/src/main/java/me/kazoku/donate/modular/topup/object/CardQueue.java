@@ -4,7 +4,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import me.kazoku.artxe.security.BiCrypt;
 import me.kazoku.donate.NKDonatePlugin;
-import com.google.gson.JsonParserUpdated;
+import me.kazoku.donate.internal.util.json.JsonParser;
 import me.kazoku.donate.internal.util.logging.Level;
 import me.kazoku.donate.modular.topup.TopupModule;
 import org.jetbrains.annotations.NotNull;
@@ -72,7 +72,7 @@ public class CardQueue {
         byte[] bytes = new byte[content.length / 2];
         int i = 0;
         while (i < content.length) bytes[i / 2] = Byte.parseByte(content[i++] + "" + content[i++], 0x10);
-        StreamSupport.stream(JsonParserUpdated.parseString(CRYPT.decrypt(new String(bytes, StandardCharsets.UTF_8))).getAsJsonArray().spliterator(), false)
+        StreamSupport.stream(JsonParser.parseString(CRYPT.decrypt(new String(bytes, StandardCharsets.UTF_8))).getAsJsonArray().spliterator(), false)
                 .filter(JsonElement::isJsonObject)
                 .map(JsonElement::getAsJsonObject)
                 .map(Card::deserialize)

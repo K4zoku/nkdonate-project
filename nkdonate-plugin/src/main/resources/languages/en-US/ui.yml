@@ -1,0 +1,34 @@
+Help:
+  Navigator:
+    # TOP / BOTTOM
+    Position: BOTTOM
+    Text: '&9&l{prev:<<} &6{current}&7/&6{max} &9&l{next:>>}'
+  Pages:
+    1:
+      - ''
+      - ''
+      - ''
+      - ''
+    2:
+      - ''
+      - ''
+      - ''
+      - ''
+
+Choose:
+  Type:
+    ==: ChatUI
+    text: '&b&l{Card_Type}'
+    hover:
+      - '&b&lCard: {Card_Type}'
+      - '&aClick to choose price'
+    click-action: RUN_COMMAND
+    click-value: '/nkdonate choose {Card_Type_Val}'
+  Price:
+    ==: ChatUI
+    text: '&b&l{Card_Amount}'
+    hover:
+      - '&b&lPrice: {Card_Amount}₫'
+      - '&aClick to begin input'
+    click-action: RUN_COMMAND
+    click-value: '/nkdonate choose {Card_Type_Val} {Card_Amount_Val}'
