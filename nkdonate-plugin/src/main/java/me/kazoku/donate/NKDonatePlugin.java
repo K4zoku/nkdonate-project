@@ -1,24 +1,23 @@
 package me.kazoku.donate;
 
-import me.kazoku.artxe.bukkit.chat.ChatInput;
+import me.kazoku.artxe.bukkit.chat.v2.ChatInputAPI;
 import me.kazoku.artxe.bukkit.command.CommandManager;
 import me.kazoku.artxe.bukkit.command.extra.CommandFeedback;
+import me.kazoku.artxe.bukkit.plugin.shell.ShellPlugin;
 import me.kazoku.artxe.utils.PlaceholderCache;
 import me.kazoku.donate.bukkit.command.NKDonateCommand;
-import me.kazoku.donate.external.api.NKDonateAPI;
+import me.kazoku.donate.internal.command.ChooseCommandNode;
 import me.kazoku.donate.internal.data.GeneralSettings;
 import me.kazoku.donate.internal.data.Messages;
 import me.kazoku.donate.internal.data.StorageStructure;
 import me.kazoku.donate.internal.data.UISettings;
 import me.kazoku.donate.internal.ui.ChatUI;
-import me.kazoku.donate.internal.util.logging.CustomLogger;
+import me.kazoku.donate.internal.util.logging.DebugLogger;
 import me.kazoku.donate.internal.util.logging.DebugWriter;
 import me.kazoku.donate.modular.NKModuleManager;
 import me.kazoku.donate.modular.topup.TopupModule;
 import me.kazoku.donate.modular.topup.object.CardQueue;
 import org.bukkit.Bukkit;
-import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.scheduler.BukkitTask;
 import org.simpleyaml.configuration.serialization.ConfigurationSerialization;
 
 import java.io.File;
@@ -27,112 +26,66 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.logging.Level;
 
-public final class NKDonatePlugin extends JavaPlugin {
+public final class NKDonatePlugin extends ShellPlugin {
 
-  private static NKDonatePlugin instance;
-  private NKDonateAPI api;
-  private NKModuleManager moduleManager;
-  private CardQueue queue;
-  private ChatInput chatInput;
-  private CustomLogger customLogger;
   private static final PlaceholderCache PLACEHOLDER_CACHE = new PlaceholderCache();
+  private static NKDonatePlugin instance;
 
-  public static NKDonatePlugin getInstance() {
+  private NKModuleManager moduleManager;
+  private CommandManager commandManager;
+  private DebugLogger debugLogger;
+  private CardQueue queue;
+
+  public static synchronized NKDonatePlugin getInstance() {
     return instance;
+  }
+
+  private static synchronized void setInstance(NKDonatePlugin instance) {
+    NKDonatePlugin.instance = instance;
   }
 
   public static PlaceholderCache getPlaceholderCache() {
     return PLACEHOLDER_CACHE;
   }
 
-  public void loadModules() {
-    if (!moduleManager.getLoadedModules().isEmpty()) {
-      moduleManager.disableModules();
-    }
-
-    moduleManager.loadModules();
-    Bukkit.getScheduler().runTaskAsynchronously(this, () -> {
-      moduleManager.enableModules();
-      moduleManager.callPostEnable();
-      getLogger().info(moduleManager::printListToString);
-    });
-  }
-
-  private void registerCommand() {
-    new CommandManager(this).register(new NKDonateCommand());
-  }
-
-
   @Override
-  public void onEnable() {
-    initEnvironment();
-    registerCommand();
-    Bukkit.getScheduler().runTaskAsynchronously(this, this::loadModules);
-    Bukkit.getScheduler().runTaskAsynchronously(this, queue::load);
-  }
-
-  @Override
-  public void onDisable() {
-    Optional.ofNullable(moduleManager).ifPresent(NKModuleManager::disableModules);
-    Optional.ofNullable(queue).ifPresent(CardQueue::save);
-  }
-
-  public NKModuleManager getModuleManager() {
-    return moduleManager;
-  }
-
-  public Optional<TopupModule> getTopupModule() {
-    Map<String, TopupModule> topupModules = getModuleManager().getLoadedModules(TopupModule.class);
-    if (topupModules.isEmpty()) return Optional.empty();
-    String name = Optional.ofNullable(GeneralSettings.ENABLED_TOPUP_MODULE.getValue()).orElse("");
-    return name.isEmpty() ? Optional.of(topupModules.values().iterator().next()) : Optional.ofNullable(topupModules.get(name));
-  }
-
-  public CardQueue getQueue() {
-    return queue;
-  }
-
-  public CommandFeedback customFeedback() {
-    return new CommandFeedback(
-            Messages.UNKNOWN_COMMAND::getValue,
-            Messages.ONLY_PLAYER::getValue,
-            Messages.NO_PERMISSION::getValue,
-            Messages.TOO_MANY_ARGS::getValue,
-            Messages.TOO_FEW_ARGS::getValue
-    );
-  }
-
-  public ChatInput getChatInput() {
-    return chatInput;
-  }
-
-  public NKDonateAPI getApi() {
-    return api;
-  }
-
-  public CustomLogger getCustomLogger() {
-    return customLogger;
-  }
-
-  private void initEnvironment() {
+  public void initialize() {
+    setInstance(this);
     ConfigurationSerialization.registerClass(ChatUI.class);
+    this.debugLogger = new DebugLogger(getLogger(), false);
+    getCommandManager().register(NKDonateCommand.getInstance());
+  }
 
-    instance = this;
+  @Override
+  public void load() {
+    loadConfiguration();
+    initDebug();
+  }
 
-    api = new NKDonateAPI() {
-      @Override
-      public BukkitTask runTaskAsync(Runnable runnable) {
-        return Bukkit.getScheduler().runTaskAsynchronously(instance, runnable);
-      }
+  @Override
+  public void startup() {
+    ChatInputAPI.register(this);
+  }
 
-      @Override
-      public NKModuleManager getModuleManager() {
-        return null;
-      }
-    };
+  @Override
+  public void postStartup() {
+    loadModules();
+    getQueue().load();
+  }
 
+  @Override
+  public void shutdown() {
+    getModuleManager().disableModules();
+    getQueue().save();
+  }
 
-    this.customLogger = new CustomLogger(getLogger(), false);
+  private void loadConfiguration() {
+    GeneralSettings.hardReload();
+    Messages.hardReload();
+    UISettings.hardReload();
+  }
+
+  private void initDebug() {
     try {
       getLogger().addHandler(
           new DebugWriter(
@@ -141,16 +94,63 @@ public final class NKDonatePlugin extends JavaPlugin {
           )
       );
     } catch (IOException e) {
-      getLogger().log(Level.SEVERE, "An error occurred: ", e);
+      getLogger().log(Level.SEVERE, "An error occurred while initialize debug environment: ", e);
     }
-    GeneralSettings.hardReload();
-    Messages.hardReload();
-    UISettings.hardReload();
-    chatInput = new ChatInput(this);
+    getDebugLogger().setDebug(GeneralSettings.DEBUG.getValue());
+  }
 
-    getCustomLogger().setDebug(GeneralSettings.DEBUG.getValue());
-    moduleManager = new NKModuleManager(this);
-    queue = new CardQueue(new File(StorageStructure.DATA_DIRECTORY, "queue.dat"));
+  public CommandManager getCommandManager() {
+    return this.commandManager == null
+        ? (this.commandManager = new CommandManager(this))
+        : this.commandManager;
+  }
+
+  public NKModuleManager getModuleManager() {
+    return this.moduleManager == null
+        ? (this.moduleManager = new NKModuleManager(this))
+        : this.moduleManager;
+  }
+
+  public void loadModules() {
+    if (!getModuleManager().getLoadedModules().isEmpty()) {
+      getModuleManager().disableModules();
+    }
+    getModuleManager().loadModules();
+    Bukkit.getScheduler().runTaskAsynchronously(this, () -> {
+      getModuleManager().enableModules();
+      getModuleManager().callPostEnable();
+      ChooseCommandNode.reload();
+      getLogger().info(getModuleManager()::printListToString);
+    });
+  }
+
+  public Optional<TopupModule> getTopupModule() {
+    Map<String, TopupModule> topupModules = getModuleManager().getLoadedModules(TopupModule.class);
+    if (topupModules.isEmpty()) return Optional.empty();
+    String name = GeneralSettings.ENABLED_TOPUP_MODULE.getValue();
+    return name.isEmpty()
+        ? Optional.of(topupModules.values().iterator().next())
+        : Optional.ofNullable(topupModules.get(name));
+  }
+
+  public CardQueue getQueue() {
+    return this.queue == null
+        ? (this.queue = new CardQueue(new File(StorageStructure.DATA_DIRECTORY, "queue.dat")))
+        : this.queue;
+  }
+
+  public CommandFeedback customFeedback() {
+    return new CommandFeedback(
+        Messages.UNKNOWN_COMMAND::getValue,
+        Messages.ONLY_PLAYER::getValue,
+        Messages.NO_PERMISSION::getValue,
+        Messages.TOO_MANY_ARGS::getValue,
+        Messages.TOO_FEW_ARGS::getValue
+    );
+  }
+
+  public DebugLogger getDebugLogger() {
+    return this.debugLogger;
   }
 
 }

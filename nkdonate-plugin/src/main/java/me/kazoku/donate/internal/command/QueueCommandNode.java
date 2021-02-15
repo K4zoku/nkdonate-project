@@ -7,11 +7,13 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 public class QueueCommandNode implements CommandNode {
-  static final QueueCommandNode INSTANCE = new QueueCommandNode();
-
+  private static final QueueCommandNode instance = new QueueCommandNode();
 
   private QueueCommandNode() {
+  }
 
+  static QueueCommandNode getInstance() {
+    return instance;
   }
 
 
@@ -30,8 +32,8 @@ public class QueueCommandNode implements CommandNode {
     Player player = (Player) sender;
 
     NKDonatePlugin.getInstance().getQueue().getCardsByPlayer(player.getUniqueId()).stream()
-            .map(Card::getSerial)
-            .forEach(player::sendMessage);
+        .map(Card::toString)
+        .forEach(player::sendMessage);
     return true;
   }
 }

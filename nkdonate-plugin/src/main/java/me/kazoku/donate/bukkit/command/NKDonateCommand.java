@@ -12,17 +12,23 @@ public final class NKDonateCommand extends Command {
     super(name, "", "/<command>", aliases);
   }
 
-  public NKDonateCommand() {
-    this(MainCommandNode.INSTANCE.label(), MainCommandNode.INSTANCE.aliases());
+  private static final NKDonateCommand instance = new NKDonateCommand();
+
+  private NKDonateCommand() {
+    this(MainCommandNode.getInstance().label(), MainCommandNode.getInstance().aliases());
+  }
+
+  public static NKDonateCommand getInstance() {
+    return instance;
   }
 
   @Override
   public boolean execute(CommandSender sender, String commandLabel, String[] args) {
-    return MainCommandNode.INSTANCE.handle(sender, args);
+    return MainCommandNode.getInstance().handle(sender, args);
   }
 
   @Override
   public List<String> tabComplete(CommandSender sender, String alias, String[] args) {
-    return MainCommandNode.INSTANCE.tabComplete(sender, args);
+    return MainCommandNode.getInstance().tabComplete(sender, args);
   }
 }

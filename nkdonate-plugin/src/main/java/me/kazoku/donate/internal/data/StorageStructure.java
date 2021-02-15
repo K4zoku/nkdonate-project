@@ -33,15 +33,15 @@ public final class StorageStructure {
         .forEach(StorageStructure::printStatus);
   }
 
+  private StorageStructure() {
+  }
+
   private static void printStatus(File directory) {
     printStatus(directory, NKDonatePlugin.getInstance().getLogger(), Level.DEBUG);
   }
 
   public static void printStatus(File directory, Logger logger, java.util.logging.Level level) {
-    logger.log(level, String.format("%s: %s", directory.getPath(), FileUtils.mkdirs(directory) ? OK : ERROR));
-  }
-
-  private StorageStructure() {
+    logger.log(level, () -> String.format("%s: %s", directory.getPath(), FileUtils.mkdirs(directory) ? OK : ERROR));
   }
 
 }

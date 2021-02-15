@@ -1,8 +1,0 @@
-rewards:
-  1:
-    10000:
-      - 'command:broadcast %player% had donated 10k!'
-      - 'command:point give %player% 10'
-  custom-name-here:
-    includes: 1
-    10000:

@@ -1,6 +1,7 @@
 package me.kazoku.donate.modular.topup;
 
 import me.kazoku.donate.NKDonatePlugin;
+import me.kazoku.donate.internal.handler.RewardsProfile;
 import me.kazoku.donate.modular.NKModule;
 import me.kazoku.donate.modular.topup.object.Card;
 import org.jetbrains.annotations.NotNull;
@@ -18,17 +19,11 @@ public abstract class TopupModule extends NKModule {
 
   public abstract List<Card.Price> getCardPrices();
 
-  @Override
-  public abstract void onEnable();
+  public abstract RewardsProfile getRewards();
 
   @NotNull
   public abstract Response sendCard(Card card);
 
   public abstract void checkCard(Card card);
 
-  @Override
-  public final boolean onLoad() {
-    verify();
-    return true;
-  }
 }

@@ -7,12 +7,9 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="nkdonate-module-thesieutoc" />
+        <module name="nkdonate-api" />
         <module name="nkdonate-plugin" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel>
-      <module name="nkdonate-api" target="1.8" />
-      <module name="nkdonate-topup" target="1.8" />
-    </bytecodeTargetLevel>
   </component>
 </project>

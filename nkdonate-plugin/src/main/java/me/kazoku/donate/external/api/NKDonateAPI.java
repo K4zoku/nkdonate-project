@@ -2,15 +2,22 @@ package me.kazoku.donate.external.api;
 
 import me.kazoku.donate.NKDonatePlugin;
 import me.kazoku.donate.modular.NKModuleManager;
+import org.bukkit.Bukkit;
 import org.bukkit.scheduler.BukkitTask;
 
-public interface NKDonateAPI {
+public final class NKDonateAPI {
 
-  static NKDonateAPI getInstance() {
-    return NKDonatePlugin.getInstance().getApi();
+  public static BukkitTask runTaskAsync(Runnable runnable) {
+    return Bukkit.getScheduler().runTaskAsynchronously(NKDonatePlugin.getInstance(), runnable);
   }
 
-  BukkitTask runTaskAsync(Runnable runnable);
+  public static BukkitTask runAsyncTimerTask(Runnable runnable, long delay, long period) {
+    return Bukkit.getScheduler().runTaskTimerAsynchronously(NKDonatePlugin.getInstance(), runnable, delay, period);
+  }
 
-  NKModuleManager getModuleManager();
+  public static NKModuleManager getModuleManager() {
+    return NKDonatePlugin.getInstance().getModuleManager();
+  }
+
+
 }

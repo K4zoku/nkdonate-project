@@ -2,10 +2,10 @@ package me.kazoku.donate.internal.data;
 
 import me.kazoku.artxe.configuration.path.CommentablePath;
 import me.kazoku.artxe.configuration.path.prototype.Paths;
-import me.kazoku.artxe.converter.time.object.Time;
-import me.kazoku.donate.internal.data.prototype.TimeConfigPath;
 
 import java.io.File;
+import java.util.Arrays;
+import java.util.List;
 
 public final class GeneralSettings extends MemoryPathBundle {
 
@@ -18,26 +18,23 @@ public final class GeneralSettings extends MemoryPathBundle {
       Paths.stringPath("locale", "en-US"),
       "[?] Change language here"
   );
-  public static final CommentablePath<Time> CHECKING_PERIOD = Paths.commented(
-      new TimeConfigPath("period", "1200tick"),
-      "[?] Card checking period (default 1200tick = 60s)",
-      "[+] Time units support! Can use unit such as tick (no need to add 'tick'), nanosecond (ns), ",
-      "    millisecond (ms), second (s), minute (m), hour (h), day (d). Recommend using tick!"
-  );
   public static final CommentablePath<String> ENABLED_TOPUP_MODULE = Paths.commented(
       Paths.stringPath("modules.topup.enabled", ""),
       "[?] Enable topup module"
+  );
+  public static final CommentablePath<List<String>> CANCEL_WORDS = Paths.commented(
+      Paths.simplePath("input.cancel", Arrays.asList("cancel", "exit")),
+      "[?] Cancel"
   );
   // End Path =========================================
 
   // static file
   public static final File GENERAL_SETTINGS_FILE = new File(StorageStructure.SETTINGS_DIRECTORY, "general.yml");
+  private static GeneralSettings instance;
 
   private GeneralSettings() {
     super(GENERAL_SETTINGS_FILE);
   }
-
-  private static GeneralSettings instance;
 
   public static GeneralSettings getInstance() {
     return instance == null ? newInstance() : instance;

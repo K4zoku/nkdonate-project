@@ -1,69 +1,103 @@
 package me.kazoku.donate.module.topup.thesieutoc;
 
 import com.google.gson.JsonObject;
+import me.kazoku.artxe.converter.time.prototype.TickConverter;
+import me.kazoku.donate.NKDonatePlugin;
+import me.kazoku.donate.external.api.NKDonateAPI;
+import me.kazoku.donate.internal.handler.RewardsProfile;
+import me.kazoku.donate.internal.util.file.FileUtils;
+import me.kazoku.donate.internal.util.json.JsonParser;
 import me.kazoku.donate.modular.topup.Response;
 import me.kazoku.donate.modular.topup.TopupModule;
 import me.kazoku.donate.modular.topup.object.Card;
+import net.thesieutoc.api.CardPrice;
+import net.thesieutoc.api.CardType;
 import net.thesieutoc.api.TheSieuTocAPI;
-import org.bukkit.ChatColor;
 import org.jetbrains.annotations.NotNull;
 import org.simpleyaml.configuration.Configuration;
 import org.simpleyaml.configuration.ConfigurationSection;
 import org.simpleyaml.configuration.file.YamlConfiguration;
 
+import java.io.File;
+import java.io.InputStream;
 import java.util.*;
+import java.util.logging.Level;
 
 public class TheSieuTocModule extends TopupModule {
 
+  private static final RewardsProfile rewards = new RewardsProfile();
   private static final List<Card.Type> CARD_TYPES = new ArrayList<>();
   private static final List<Card.Price> CARD_PRICES = new ArrayList<>();
+  private File configFile;
   private TheSieuTocAPI theSieuTocApi;
+  private long period;
 
   @Override
-  public void onEnable() {
+  public boolean onPreStartup() {
+    configFile = new File(getDataFolder(), "config.yml");
     saveDefaults();
-    loadConfig();
+    return loadConfig();
+  }
+
+  @Override
+  public void onStartup() {
+    NKDonateAPI.runAsyncTimerTask(NKDonatePlugin.getInstance().getQueue()::checkAll, 0, period);
   }
 
   private void saveDefaults() {
-    Configuration config = getConfig();
-    Optional.ofNullable(getClassLoader().getResourceAsStream("config.yml"))
-            .map(YamlConfiguration::loadConfiguration)
-            .ifPresent(config::setDefaults);
-    config.options().copyDefaults(true);
-    saveConfig();
+    final InputStream is = getClassLoader().getResourceAsStream("config.yml");
+    if (Objects.nonNull(is)) {
+      if (configFile.exists()) {
+        Configuration config = getConfig();
+        config.setDefaults(YamlConfiguration.loadConfiguration(is));
+        config.options().copyDefaults(true);
+      } else {
+        FileUtils.toFile(is, configFile, getModuleManager().getLogger());
+      }
+    }
   }
 
-  private void loadConfig() {
+  private boolean loadConfig() {
     final Configuration config = getConfig();
     final String apiKey = config.getString("APIKey", "");
     final String apiSecret = config.getString("APISecret", "");
-    theSieuTocApi = new TheSieuTocAPI(apiKey, apiSecret);
-
+    final String rewardProfile = config.getString("RewardProfile", "");
+    if (!rewardProfile.isEmpty()) {
+      final ConfigurationSection rewardSection = config.getConfigurationSection("Rewards." + rewardProfile);
+      rewards.load(rewardSection);
+    }
+    try {
+      theSieuTocApi = new TheSieuTocAPI(apiKey, apiSecret);
+    } catch (IllegalArgumentException e) {
+      getModuleManager().getLogger().log(Level.WARNING, "Missing API information, disabling...");
+      return false;
+    }
+    period = TickConverter.convertToTick(config.get("Period", "2m")).getValue().longValue();
     CARD_TYPES.clear();
-    final ConfigurationSection cardTypes = config.getConfigurationSection("Card.Type");
-    cardTypes.getKeys(false)
-            .forEach(type ->
-                    CARD_TYPES.add(new Card.Type(type, cardTypes.getString(type, type)))
-            );
+    final ConfigurationSection typeSection = config.getConfigurationSection("Card.Type");
+    Arrays.stream(CardType.values())
+        .forEach(type -> Optional.ofNullable(typeSection.getString(type.getValue()))
+            .map(type::toGenericType)
+            .ifPresent(CARD_TYPES::add));
 
     CARD_PRICES.clear();
-    final ConfigurationSection cardPrices = config.getConfigurationSection("Card.Price");
-    cardPrices.getKeys(false)
-            .forEach(price ->
-                    CARD_PRICES.add(new Card.Price(price, cardPrices.getString(price, price)))
-            );
+    final ConfigurationSection priceSection = config.getConfigurationSection("Card.Price");
+    Arrays.stream(CardPrice.values())
+        .forEach(price -> Optional.ofNullable(priceSection.getString(price.getValue()))
+            .map(price::toGenericPrice)
+            .ifPresent(CARD_PRICES::add));
+    return true;
   }
 
   @NotNull
   @Override
   public Response sendCard(Card card) {
-    JsonObject json = theSieuTocApi.createTransaction(
-            card.getType().getValue(),
-            card.getPrice().getValue(),
-            card.getSerial(),
-            card.getPin()
-    );
+    JsonObject json = JsonParser.parseString(theSieuTocApi.createTransaction(
+        card.getType().getValue(),
+        card.getPrice().getValue(),
+        card.getSerial(),
+        card.getPin()
+    )).getAsJsonObject();
     boolean success = json.get("status").getAsString().equals("00");
     if (success) card.updateId(json.get("transaction_id")::getAsString);
     return new Response(success, json.get("msg").getAsString());
@@ -71,7 +105,7 @@ public class TheSieuTocModule extends TopupModule {
 
   @Override
   public void checkCard(Card card) {
-    JsonObject json = theSieuTocApi.checkTransaction(card.getId());
+    JsonObject json = JsonParser.parseString(theSieuTocApi.checkTransaction(card.getId())).getAsJsonObject();
     Card.Status status;
     switch (json.get("status").getAsString()) {
       case "00":
@@ -95,5 +129,10 @@ public class TheSieuTocModule extends TopupModule {
   @Override
   public List<Card.Price> getCardPrices() {
     return CARD_PRICES;
+  }
+
+  @Override
+  public RewardsProfile getRewards() {
+    return rewards;
   }
 }

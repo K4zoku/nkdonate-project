@@ -12,4 +12,5 @@ period: 1200tick
 modules:
   topup:
     # [?] Enable topup module
+    # [?] Default: Empty string '', the plugin automatically load the first topup module
     enabled: ''

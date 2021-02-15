@@ -4,19 +4,18 @@ import me.kazoku.artxe.configuration.general.Config;
 import me.kazoku.artxe.configuration.path.ConfigPath;
 import me.kazoku.artxe.configuration.yaml.YamlConfig;
 import me.kazoku.donate.NKDonatePlugin;
-import me.kazoku.donate.internal.util.ThrowableFunction;
 import me.kazoku.donate.internal.util.file.FileUtils;
 import org.jetbrains.annotations.NotNull;
 import org.simpleyaml.utils.Validate;
 
 import java.io.File;
 import java.io.InputStream;
-import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.logging.Logger;
 
 import static me.kazoku.donate.internal.util.ChatColorUtils.colorize;
+import static me.kazoku.donate.internal.util.ThrowableFunction.throwableFn;
 
 public class MemoryPathBundle {
 
@@ -50,7 +49,7 @@ public class MemoryPathBundle {
   protected static <T extends MemoryPathBundle> void loadPaths(T t, Config config) {
     Arrays.stream(t.getClass().getDeclaredFields())
         .filter(field -> ConfigPath.class.isAssignableFrom(field.getType()))
-        .map((ThrowableFunction<Field, Object>) field -> field.get(t))
+        .map(throwableFn(field -> field.get(t)))
         .filter(Objects::nonNull)
         .map(ConfigPath.class::cast)
         .forEach(path -> path.setConfig(config));

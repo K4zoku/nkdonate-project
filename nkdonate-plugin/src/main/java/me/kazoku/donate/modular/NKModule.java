@@ -11,53 +11,93 @@ import me.kazoku.artxe.utils.TTLCache;
 import me.kazoku.donate.internal.util.json.JsonParser;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Optional;
+
+import static me.kazoku.donate.internal.util.ThrowableSupplier.throwableSupplier;
+
 public abstract class NKModule extends Module {
 
-    private static final String DATABASE_URL = "https://raw.githubusercontent.com/NakamuraKazoku/NKDonate-Modules/main/modules-database.json";
-    private static final String VERIFIED = "§a%s ✓§r";
-    private static final String UNVERIFIED = "§e%s*§r";
-    private static final String DISABLED = "§c%s ✘§r";
-    private static final TTLCache<JsonObject> databaseCache = new TTLCache<>(NKModule::requestDatabase, 0x493e0);
+  private static final String DATABASE_URL = "https://raw.githubusercontent.com/NakamuraKazoku/NKDonate-Modules/main/modules-database.json";
+  private static final String VERIFIED_FORMAT = "\u00A7a%s \u2713\u00A7r";
+  private static final String UNVERIFIED_FORMAT = "\u00A7e%s*\u00A7r";
+  private static final String DISABLED_FORMAT = "\u00A7c%s \u2718\u00A7r";
+  private static final TTLCache<JsonObject> DATABASE_CACHE = new TTLCache<>(NKModule::requestDatabase, 0x493e0);
 
-    private Config config;
-    private Boolean verified;
-    private boolean enabled = false;
+  private Config config;
+  private Boolean verified = null;
+  private boolean enabled = false;
 
-    protected final boolean verify() {
-        return verified = getDatabase().has(Hashing.get("SHA-256", JarUtils.traceTheSource(getClass())));
-    }
+  private static JsonObject requestDatabase() {
+    return JsonParser.parseString(SimpleWebUtils.sendRequest(DATABASE_URL)).getAsJsonObject();
+  }
 
-    @Override
-    protected @NotNull Config createConfig() {
-        return (config != null) ? config : (config = new YamlConfig(getDataFolder(), "config.yml"));
-    }
+  private static JsonObject getDatabase() {
+    return DATABASE_CACHE.get();
+  }
 
-    public boolean isEnabled() {
-        return enabled;
-    }
+  protected final boolean verify() {
+    return verified = getDatabase().has(
+        throwableSupplier(
+            () -> Hashing.getHash("SHA-256", JarUtils.traceTheSource(getClass()))
+        ).get()
+    );
+  }
 
-    public boolean isVerified() {
-        return verified == null ? verify() : verified;
-    }
+  @Override
+  protected @NotNull Config createConfig() {
+    return (config != null) ? config : (config = new YamlConfig(getDataFolder(), "config.yml"));
+  }
 
-    public final String getDisplayName() {
-        return String.format(isEnabled() ? (isVerified() ? VERIFIED : UNVERIFIED) : DISABLED, getName());
-    }
+  public boolean isEnabled() {
+    return enabled;
+  }
 
-    public final String getName() {
-        return getInfo().getName();
-    }
+  public boolean onPreStartup() {
+    return true;
+  }
 
-    @Override
-    public final void onPostEnable() {
-        enabled = true;
-    }
+  public void onStartup() {
+  }
 
-    private static JsonObject requestDatabase() {
-        return JsonParser.parseString(SimpleWebUtils.sendRequest(DATABASE_URL)).getAsJsonObject();
-    }
+  public void onPostStartup() {
+  }
 
-    private static JsonObject getDatabase() {
-        return databaseCache.get();
-    }
+  public void onShutdown() {
+  }
+
+  @Override
+  public final boolean onLoad() {
+    verify();
+    return onPreStartup();
+  }
+
+  @Override
+  public final void onEnable() {
+    onStartup();
+  }
+
+  @Override
+  public final void onPostEnable() {
+    enabled = true;
+    onPostStartup();
+  }
+
+  @Override
+  public final void onDisable() {
+    enabled = false;
+    onShutdown();
+  }
+
+  public boolean isVerified() {
+    return Optional.ofNullable(verified).orElse(verify());
+  }
+
+  public final String getDisplayName() {
+    if (isEnabled()) return String.format(isVerified() ? VERIFIED_FORMAT : UNVERIFIED_FORMAT, getName());
+    return String.format(DISABLED_FORMAT, getName());
+  }
+
+  public final String getName() {
+    return getInfo().getName();
+  }
 }

@@ -1,6 +1,8 @@
 APIKey: ''
 APISecret: ''
 
+Period: 2m
+
 Card:
   Type:
     Viettel: 'Viettel'
@@ -11,6 +13,7 @@ Card:
     Zing: 'Zing'
     Gate: 'Gate'
     Garena: 'Garena'
+
   Price:
     1: '10K'
     2: '20K'
@@ -21,3 +24,40 @@ Card:
     7: '300K'
     8: '500K'
     9: '1M'
+
+RewardProfile: 'profile-0'
+
+Rewards:
+  profile-0:
+    general:
+      1:
+        - 'op:points give {player} 10'
+        - 'console:broadcast {player} has just donated 10k!'
+      2:
+        - 'op:points give {player} 20'
+        - 'console:broadcast {player} has just donated 20k!'
+      3:
+        - 'op:points give {player} 30'
+        - 'console:broadcast {player} has just donated 30k!'
+      4:
+        - 'op:points give {player} 50'
+        - 'console:broadcast {player} has just donated 50k!'
+      5:
+        - 'op:points give {player} 100'
+        - 'console:broadcast {player} has just donated 100k!'
+      6:
+        - 'op:points give {player} 200'
+        - 'console:broadcast {player} has just donated 200k!'
+      7:
+        - 'op:points give {player} 300'
+        - 'console:broadcast {player} has just donated 300k!'
+      8:
+        - 'op:points give {player} 500'
+        - 'console:broadcast {player} has just donated 500k!'
+      9:
+        - 'op:points give {player} 1000'
+        - 'console:broadcast {player} has just donated 1m!'
+    Viettel:
+      9:
+        - 'op:points give {player} 1100'
+        - 'console:broadcast {player} has just donated Viettel 1m and received 1100 points!'

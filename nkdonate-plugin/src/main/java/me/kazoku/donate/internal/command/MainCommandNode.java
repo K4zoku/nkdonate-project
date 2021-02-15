@@ -10,24 +10,36 @@ import java.util.List;
 
 public final class MainCommandNode implements CommandNode {
 
-  public static final MainCommandNode INSTANCE = new MainCommandNode();
+  private static final MainCommandNode instance = new MainCommandNode();
+  private static final String LABEL = "nkdonate";
+  private static final List<String> ALIASES = Arrays.asList("donate", "napthe");
 
   private MainCommandNode() {
   }
 
+  public static MainCommandNode getInstance() {
+    return instance;
+  }
+
   @Override
   public String label() {
-    return "nkdonate";
+    return LABEL;
   }
 
   @Override
   public List<String> aliases() {
-    return Arrays.asList("donate", "napthe");
+    return ALIASES;
   }
 
   @Override
   public List<CommandNode> subCommands() {
-    return Arrays.asList(InfoCommandNode.INSTANCE, ModulesCommandNode.INSTANCE, ReloadCommandNode.INSTANCE, ChooseCommandNode.getInstance(), QueueCommandNode.INSTANCE);
+    return Arrays.asList(
+        InfoCommandNode.getInstance(),
+        ModulesCommandNode.getInstance(),
+        ReloadCommandNode.getInstance(),
+        ChooseCommandNode.getInstance(),
+        ForceUpdateCard.getInstance(),
+        QueueCommandNode.getInstance());
   }
 
   @Override

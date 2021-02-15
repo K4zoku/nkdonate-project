@@ -12,34 +12,50 @@ import java.util.List;
 
 public final class ModulesCommandNode implements CommandNode {
 
-  static final ModulesCommandNode INSTANCE = new ModulesCommandNode();
+  private static final ModulesCommandNode instance = new ModulesCommandNode();
 
-  private static final List<CommandNode> subcommands = Collections.singletonList(
-          new SimpleCommandNode(
-                  "reload",
-                  "nkdonate.admin.module",
-                  (sender, label, args) -> {
-                    NKDonatePlugin.getInstance().loadModules();
-                    return true;
-                  })
+  private static final List<CommandNode> subcommands = Arrays.asList(
+      new SimpleCommandNode(
+          "reload",
+          "nkdonate.admin.module.reload",
+          (sender, label, args) -> {
+            NKDonatePlugin.getInstance().loadModules();
+            return true;
+          }),
+      new SimpleCommandNode(
+          "list",
+          "nkdonate.admin.module.list",
+          (sender, label, args) -> {
+            sender.sendMessage(NKDonatePlugin.getInstance().getModuleManager().printListToString());
+            return true;
+          }
+      )
   );
+
+  private static final List<String> ALIASES = Arrays.asList("module", "addon", "addons", "add-on");
+  private static final String LABEL = "modules";
+  private static final List<String> PERMISSIONS = Collections.singletonList("nkdonate.admin.module");
 
   private ModulesCommandNode() {
   }
 
+  static ModulesCommandNode getInstance() {
+    return instance;
+  }
+
   @Override
   public List<String> aliases() {
-    return Arrays.asList("module", "addon", "addons", "add-on");
+    return ALIASES;
   }
 
   @Override
   public String label() {
-    return "modules";
+    return LABEL;
   }
 
   @Override
   public List<String> permissions() {
-    return Collections.singletonList("nkdonate.admin.module");
+    return PERMISSIONS;
   }
 
   @Override

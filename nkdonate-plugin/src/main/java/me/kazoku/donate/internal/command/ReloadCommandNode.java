@@ -17,17 +17,17 @@ import java.util.List;
 
 public final class ReloadCommandNode implements CommandNode {
 
-  static final ReloadCommandNode INSTANCE = new ReloadCommandNode();
+  private static final ReloadCommandNode instance = new ReloadCommandNode();
 
   private final List<CommandNode> subcommands = new ArrayList<>();
   private final CommandFeedback feedback;
 
   private ReloadCommandNode() {
-    feedback = NKDonatePlugin.getInstance().customFeedback();
+    this.feedback = NKDonatePlugin.getInstance().customFeedback();
     final String reloadMsg = Messages.RELOADED.getValue();
-    final PlaceholderCache cache = NKDonatePlugin.getPlaceholderCache();
-    final String reloadAllMsg = cache.apply(reloadMsg, "type", "ALL");
-    feedback.COMMAND_SUCCESS.setFeedback(reloadAllMsg);
+    final PlaceholderCache pc = NKDonatePlugin.getPlaceholderCache();
+    final String reloadAllMsg = pc.apply(reloadMsg, "type", "ALL");
+    this.feedback.COMMAND_SUCCESS.setFeedback(reloadAllMsg);
     CommandNode reloadAll = new SimpleCommandNode(
         "all",
         "nkdonate.admin.reload.all",
@@ -39,11 +39,12 @@ public final class ReloadCommandNode implements CommandNode {
         "setting",
         "nkdonate.admin.reload.settings",
         (sender, label, args) -> {
+          ChooseCommandNode.reload();
           GeneralSettings.softReload();
           return true;
         }
     );
-    reloadSettings.feedback().COMMAND_SUCCESS.setFeedback(cache.apply(reloadMsg, "type", "SETTINGS"));
+    reloadSettings.feedback().COMMAND_SUCCESS.setFeedback(pc.apply(reloadMsg, "type", "SETTINGS"));
     CommandNode reloadLanguages = new SimpleCommandNode(
         "language",
         Arrays.asList("lang", "languages"),
@@ -53,7 +54,7 @@ public final class ReloadCommandNode implements CommandNode {
           return true;
         }
     );
-    reloadLanguages.feedback().COMMAND_SUCCESS.setFeedback(cache.apply(reloadMsg, "type", "LANGUAGES"));
+    reloadLanguages.feedback().COMMAND_SUCCESS.setFeedback(pc.apply(reloadMsg, "type", "LANGUAGES"));
     CommandNode reloadMessages = new SimpleCommandNode(
         "messages",
         Arrays.asList("message", "msg"),
@@ -63,7 +64,7 @@ public final class ReloadCommandNode implements CommandNode {
           return true;
         }
     );
-    reloadMessages.feedback().COMMAND_SUCCESS.setFeedback(cache.apply(reloadMsg, "type", "MESSAGES"));
+    reloadMessages.feedback().COMMAND_SUCCESS.setFeedback(pc.apply(reloadMsg, "type", "MESSAGES"));
     CommandNode reloadUi = new SimpleCommandNode(
         "ui",
         "nkdonate.admin.reload.ui",
@@ -72,28 +73,32 @@ public final class ReloadCommandNode implements CommandNode {
           return true;
         }
     );
-    reloadUi.feedback().COMMAND_SUCCESS.setFeedback(cache.apply(reloadMsg, "type", "UI"));
+    reloadUi.feedback().COMMAND_SUCCESS.setFeedback(pc.apply(reloadMsg, "type", "UI"));
 
-    List<CommandNode> subcommands = new ArrayList<>();
-    subcommands.add(reloadAll);
-    subcommands.add(reloadSettings);
-    subcommands.add(reloadLanguages);
-    subcommands.add(reloadMessages);
-    subcommands.add(reloadUi);
+    List<CommandNode> nodes = new ArrayList<>();
+    nodes.add(reloadAll);
+    nodes.add(reloadSettings);
+    nodes.add(reloadLanguages);
+    nodes.add(reloadMessages);
+    nodes.add(reloadUi);
     CommandNode numberAsType = new SimpleCommandNode(
         label -> {
           try {
             int i = Integer.parseInt(label);
-            return i >= 0 && i < subcommands.size();
+            return i >= 0 && i < nodes.size();
           } catch (NumberFormatException e) {
             return false;
           }
         },
         "nkdonate.admin.reload.*",
-        (sender, label, args) -> subcommands.get(Integer.parseInt(label)).execute(sender, label, args)
+        (sender, label, args) -> nodes.get(Integer.parseInt(label)).execute(sender, label, args)
     );
-    this.subcommands.addAll(subcommands);
+    this.subcommands.addAll(nodes);
     this.subcommands.add(numberAsType);
+  }
+
+  static ReloadCommandNode getInstance() {
+    return instance;
   }
 
   @Override
@@ -118,7 +123,7 @@ public final class ReloadCommandNode implements CommandNode {
 
   @Override
   public CommandFeedback feedback() {
-    return feedback;
+    return this.feedback;
   }
 
   @Override

@@ -10,6 +10,7 @@
     <modules>
         <module>nkdonate-plugin</module>
         <module>nkdonate-module-thesieutoc</module>
+        <module>nkdonate-api</module>
     </modules>
     <packaging>pom</packaging>
     <name>NKDonate</name>

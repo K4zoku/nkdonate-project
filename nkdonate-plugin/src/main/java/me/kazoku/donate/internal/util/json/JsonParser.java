@@ -10,4 +10,7 @@ public final class JsonParser {
     return PARSER.parse(json);
   }
 
+  private JsonParser() {
+  }
+
 }
