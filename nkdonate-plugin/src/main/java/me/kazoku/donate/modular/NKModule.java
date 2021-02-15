@@ -11,6 +11,7 @@ import me.kazoku.artxe.utils.TTLCache;
 import me.kazoku.donate.internal.util.json.JsonParser;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Map;
 import java.util.Optional;
 
 import static me.kazoku.donate.internal.util.ThrowableSupplier.throwableSupplier;
@@ -28,7 +29,7 @@ public abstract class NKModule extends Module {
   private boolean enabled = false;
 
   private static JsonObject requestDatabase() {
-    return JsonParser.parseString(SimpleWebUtils.sendRequest(DATABASE_URL)).getAsJsonObject();
+    return JsonParser.parseString(SimpleWebUtils.sendRequest(DATABASE_URL)).getAsJsonObject().get("modules").getAsJsonObject();
   }
 
   private static JsonObject getDatabase() {
@@ -36,11 +37,15 @@ public abstract class NKModule extends Module {
   }
 
   protected final boolean verify() {
-    return verified = getDatabase().has(
-        throwableSupplier(
-            () -> Hashing.getHash("SHA-256", JarUtils.traceTheSource(getClass()))
-        ).get()
-    );
+    final String hash = throwableSupplier(
+        () -> Hashing.getHash("SHA-256", JarUtils.traceTheSource(getClass()))
+    ).get();
+    verified = getDatabase().entrySet()
+        .stream()
+        .parallel()
+        .map(Map.Entry::getKey)
+        .anyMatch(hash::equalsIgnoreCase);
+    return verified;
   }
 
   @Override
