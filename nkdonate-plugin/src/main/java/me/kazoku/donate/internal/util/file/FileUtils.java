@@ -13,16 +13,16 @@ public class FileUtils {
     try {
       toFile(is, out);
     } catch (IOException e) {
-      logger.log(Level.SEVERE, "Could not save " + out.getName() + " to " + out, e);
+      logger.log(Level.SEVERE, String.format("Could not save %s to %s", out.getName(), out), e);
     }
   }
 
   public static void toFile(final InputStream is, File out) throws IOException {
-    OutputStream os = new FileOutputStream(out);
-    byte[] buf = new byte[1024];
-    int len;
-    while ((len = is.read(buf)) > 0) os.write(buf, 0, len);
-    os.close();
+    try (OutputStream os = new FileOutputStream(out)) {
+      byte[] buf = new byte[1024];
+      int len;
+      while ((len = is.read(buf)) > 0) os.write(buf, 0, len);
+    }
   }
 
   public static boolean create(File file) {

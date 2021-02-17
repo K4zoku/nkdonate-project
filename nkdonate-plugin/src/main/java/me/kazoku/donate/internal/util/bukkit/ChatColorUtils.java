@@ -1,4 +1,4 @@
-package me.kazoku.donate.internal.util;
+package me.kazoku.donate.internal.util.bukkit;
 
 import me.kazoku.donate.internal.util.collection.CollectionUtils;
 import org.simpleyaml.configuration.ConfigurationSection;

@@ -2,3 +2,5 @@
 /nkdonate-module-thesieutoc/target/
 /nkdonate-plugin/target/
 /target/
+/.idea/
+*.iml

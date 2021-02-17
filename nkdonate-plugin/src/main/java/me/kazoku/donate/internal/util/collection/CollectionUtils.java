@@ -7,6 +7,9 @@ import java.util.Optional;
 
 public class CollectionUtils {
 
+  private CollectionUtils() {
+  }
+
   public static boolean isValidElementType(Collection<?> collection, Class<?> elementType) {
     return !collection.isEmpty() && collection.stream().allMatch(elementType::isInstance);
   }
@@ -21,8 +24,7 @@ public class CollectionUtils {
 
   @SuppressWarnings("unchecked")
   public static Optional<List<String>> objToStrList(Object o) {
-    if (isStringCollection(o)) return Optional.of(new ArrayList<>((Collection<String>) o));
-    else return Optional.empty();
+    return isStringCollection(o) ? Optional.of(new ArrayList<>((Collection<String>) o)) : Optional.empty();
   }
 
 }

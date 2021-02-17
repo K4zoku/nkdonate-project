@@ -14,7 +14,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Map;
 import java.util.Optional;
 
-import static me.kazoku.donate.internal.util.ThrowableSupplier.throwableSupplier;
+import static me.kazoku.donate.internal.util.function.ThrowableSupplier.throwableSupplier;
 
 public abstract class NKModule extends Module {
 

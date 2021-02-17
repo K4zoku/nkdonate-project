@@ -1,4 +1,4 @@
-package me.kazoku.donate.internal.util;
+package me.kazoku.donate.internal.util.function;
 
 import java.util.function.Supplier;
 

@@ -1,8 +1,8 @@
 package me.kazoku.donate.internal.data;
 
 import me.kazoku.donate.NKDonatePlugin;
-import me.kazoku.donate.internal.util.ThrowableFunction;
 import me.kazoku.donate.internal.util.file.FileUtils;
+import me.kazoku.donate.internal.util.function.ThrowableFunction;
 import me.kazoku.donate.internal.util.logging.Level;
 
 import java.io.File;

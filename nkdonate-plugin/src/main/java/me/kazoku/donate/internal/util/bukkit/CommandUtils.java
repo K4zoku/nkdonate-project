@@ -8,17 +8,21 @@ import java.util.UUID;
 
 public class CommandUtils {
 
+  private CommandUtils() {
+  }
+
   public static void dispatchCommand(String command) {
     Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
   }
 
-  public static void dispatchCommand(UUID player, String command, boolean op) {
-    PlayerUtils.getPlayer(player).ifPresent(p -> dispatchCommand(p, command, op));
+  public static void dispatchCommand(UUID playerId, String command, boolean op) {
+    PlayerUtils.getPlayer(playerId).ifPresent(player -> dispatchCommand(player, command, op));
   }
 
   private static void dispatchCommand(Player player, String command, boolean op) {
-    boolean playerOp = player.isOp();
+    final boolean playerOp = player.isOp();
     if (!playerOp && op) player.setOp(true);
+    // TODO: Add external placeholder replacer
     command = NKDonatePlugin.getPlaceholderCache().apply(command, "player", player.getName());
     player.chat('/' + command);
     player.setOp(playerOp);

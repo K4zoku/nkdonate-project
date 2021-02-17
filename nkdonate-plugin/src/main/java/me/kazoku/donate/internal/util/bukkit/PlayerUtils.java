@@ -8,7 +8,13 @@ import java.util.Optional;
 import java.util.UUID;
 
 public class PlayerUtils {
+
+  private PlayerUtils() {
+  }
+
   public static Optional<Player> getPlayer(UUID playerUUID) {
-    return Optional.of(Bukkit.getOfflinePlayer(playerUUID)).filter(OfflinePlayer::isOnline).map(OfflinePlayer::getPlayer);
+    return Optional.of(Bukkit.getOfflinePlayer(playerUUID))
+        .filter(OfflinePlayer::isOnline)
+        .map(OfflinePlayer::getPlayer);
   }
 }

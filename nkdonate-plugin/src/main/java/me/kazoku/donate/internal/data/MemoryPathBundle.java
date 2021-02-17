@@ -14,8 +14,8 @@ import java.util.Arrays;
 import java.util.Objects;
 import java.util.logging.Logger;
 
-import static me.kazoku.donate.internal.util.ChatColorUtils.colorize;
-import static me.kazoku.donate.internal.util.ThrowableFunction.throwableFn;
+import static me.kazoku.donate.internal.util.bukkit.ChatColorUtils.colorize;
+import static me.kazoku.donate.internal.util.function.ThrowableFunction.throwableFn;
 
 public class MemoryPathBundle {
 

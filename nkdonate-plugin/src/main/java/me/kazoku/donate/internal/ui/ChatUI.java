@@ -2,7 +2,7 @@ package me.kazoku.donate.internal.ui;
 
 import me.kazoku.artxe.utils.PlaceholderCache;
 import me.kazoku.donate.NKDonatePlugin;
-import me.kazoku.donate.internal.util.ChatColorUtils;
+import me.kazoku.donate.internal.util.bukkit.ChatColorUtils;
 import me.kazoku.donate.internal.util.collection.CollectionUtils;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ClickEvent;
