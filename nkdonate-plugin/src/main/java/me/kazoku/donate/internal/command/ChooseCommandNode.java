@@ -129,26 +129,22 @@ public class ChooseCommandNode implements CommandNode {
   }
 
   private void chooseType(CommandSender sender) {
-    ChatUI chatUi = UISettings.CHOOSE_TYPE.getValue()
-        .clone()
-        .addPlayer((Player) sender);
+    ChatUI chatUi = UISettings.CHOOSE_TYPE.getValue().clone();
     for (Card.Type cardType : types) {
       chatUi.applyPlaceholder("Card_Type_Val", cardType.getValue())
           .applyPlaceholder("Card_Type", cardType.getDisplay())
-          .display();
+          .display((Player) sender);
     }
   }
 
   private void choosePrice(Card.Type type, CommandSender sender) {
-    ChatUI chatUi = UISettings.CHOOSE_AMOUNT.getValue()
-        .clone()
-        .addPlayer((Player) sender);
+    ChatUI chatUi = UISettings.CHOOSE_AMOUNT.getValue().clone();
     for (Card.Price price : this.prices) {
       chatUi.applyPlaceholder("Card_Type_Val", type.getValue())
           .applyPlaceholder("Card_Amount_Val", DF.format(price.getNumericValue()))
           .applyPlaceholder("Card_Type", type.getDisplay())
           .applyPlaceholder("Card_Amount", price.getDisplay())
-          .display();
+          .display((Player) sender);
     }
   }
 

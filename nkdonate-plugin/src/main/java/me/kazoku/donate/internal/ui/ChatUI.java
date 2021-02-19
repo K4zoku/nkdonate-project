@@ -8,19 +8,17 @@ import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.simpleyaml.configuration.serialization.ConfigurationSerializable;
 import org.simpleyaml.configuration.serialization.SerializableAs;
 
-import java.util.*;
-import java.util.function.Function;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Optional;
+import java.util.function.UnaryOperator;
 
 @SerializableAs("ChatUI")
-public final class ChatUI implements UI, ConfigurationSerializable, Cloneable {
+public final class ChatUI implements ConfigurationSerializable, Cloneable {
 
   private static final PlaceholderCache PLACEHOLDER_CACHE = NKDonatePlugin.getPlaceholderCache();
 
@@ -32,23 +30,13 @@ public final class ChatUI implements UI, ConfigurationSerializable, Cloneable {
     );
   }
 
-  private final Set<Player> players = new HashSet<>();
   private String text;
   private String click;
   private String hover;
   private ClickEvent.Action clickAction = ClickEvent.Action.RUN_COMMAND; // default
 
-  public ChatUI(String text, boolean broadcast) {
-    this(text, broadcast ? Bukkit.getServer().getOnlinePlayers() : Collections.emptyList());
-  }
-
-  private ChatUI(String text, Collection<? extends Player> target) {
+  public ChatUI(String text) {
     this.text = text;
-    players.addAll(target);
-  }
-
-  public ChatUI(String text, Player... target) {
-    this(text, Arrays.asList(target));
   }
 
   /**
@@ -79,22 +67,10 @@ public final class ChatUI implements UI, ConfigurationSerializable, Cloneable {
     this.hover = origin.hover;
     this.clickAction = origin.clickAction;
     this.click = origin.click;
-    this.players.addAll(origin.players);
   }
 
   public static ChatUI deserialize(Map<String, Object> serialized) {
     return new ChatUI(serialized);
-  }
-
-  public void test(EntityDamageByEntityEvent event, ItemStack bow) {
-    if (!(event.getEntity() instanceof Player)) return;
-    Optional.ofNullable(bow.getItemMeta())
-        .filter(ItemMeta::hasDisplayName)
-        .map(ItemMeta::getDisplayName)
-        .filter(name -> name.equals("Thunder Sword"))
-        .ifPresent(name -> {
-          // do something
-        });
   }
 
   public ChatUI setText(String text) {
@@ -102,7 +78,7 @@ public final class ChatUI implements UI, ConfigurationSerializable, Cloneable {
     return this;
   }
 
-  public ChatUI getAndUpdateText(Function<String, String> updateFunction) {
+  public ChatUI getAndUpdateText(UnaryOperator<String> updateFunction) {
     return setText(updateFunction.apply(text));
   }
 
@@ -129,7 +105,7 @@ public final class ChatUI implements UI, ConfigurationSerializable, Cloneable {
     return this;
   }
 
-  public ChatUI getAndUpdateClickValue(Function<String, String> updateFunction) {
+  public ChatUI getAndUpdateClickValue(UnaryOperator<String> updateFunction) {
     return setClickValue(updateFunction.apply(click));
   }
 
@@ -138,31 +114,25 @@ public final class ChatUI implements UI, ConfigurationSerializable, Cloneable {
     return this;
   }
 
-  public ChatUI getAndUpdateHoverText(Function<String, String> updateFunction) {
+  public ChatUI getAndUpdateHoverText(UnaryOperator<String> updateFunction) {
     return setHoverText(updateFunction.apply(hover));
   }
 
-  public ChatUI addPlayer(Player player) {
-    players.add(player);
-    return this;
-  }
-
-  @Override
-  public void display() {
+  public void display(Player player) {
     BaseComponent[] baseComponents = new ComponentBuilder(text)
         .event(new ClickEvent(clickAction, click))
         .event(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
             new ComponentBuilder(hover).create()))
         .create();
-    players.stream().parallel()
+    Optional.of(player)
         .filter(Player::isOnline)
-        .forEach(player -> player.spigot().sendMessage(baseComponents));
+        .map(Player::spigot)
+        .ifPresent(s -> s.sendMessage(baseComponents));
   }
 
   public ChatUI clone() {
     try {
       ChatUI clone = (ChatUI) super.clone();
-      clone.players.addAll(this.players);
       clone.text = this.text;
       clone.click = this.click;
       clone.hover = this.hover;
