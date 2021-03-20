@@ -1,6 +1,9 @@
 package me.kazoku.donate.internal.handler.action;
 
+import me.kazoku.donate.NKDonatePlugin;
 import me.kazoku.donate.internal.handler.Action;
+import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 
 import java.util.UUID;
 
@@ -15,6 +18,8 @@ public abstract class CommandAction implements Action {
 
   @Override
   public final void doAction(UUID uuid) {
-    runCommand(uuid, command);
+    OfflinePlayer player = Bukkit.getOfflinePlayer(uuid);
+    String finalCommand = NKDonatePlugin.getPlaceholderCache().apply(command, "player", player.getName());
+    runCommand(uuid, finalCommand);
   }
 }

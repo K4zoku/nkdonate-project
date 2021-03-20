@@ -112,9 +112,8 @@ public final class NKDonatePlugin extends ShellPlugin {
   }
 
   public void loadModules() {
-    if (!getModuleManager().getLoadedModules().isEmpty()) {
-      getModuleManager().disableModules();
-    }
+    if (!getModuleManager().getLoadedModules().isEmpty()) getModuleManager().disableModules();
+
     getModuleManager().loadModules();
     Bukkit.getScheduler().runTaskAsynchronously(this, () -> {
       getModuleManager().enableModules();

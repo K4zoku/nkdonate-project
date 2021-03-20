@@ -36,11 +36,11 @@ public final class InfoCommandNode implements CommandNode {
   public boolean execute(CommandSender sender, String label, String[] args) {
     final PluginDescriptionFile description = NKDonatePlugin.getInstance().getDescription();
     sender.sendMessage("§7| §aNKDonate §7\\______________________________");
-    sender.sendMessage("");
-    sender.sendMessage("   §aVersion:       §7" + description.getVersion());
-    sender.sendMessage("   §aAuthor(s):     §7" + String.join(", ", description.getAuthors()));
-    sender.sendMessage("   §aDescription:   §7" + description.getDescription());
-    sender.sendMessage("§7________________________________________");
+    sender.sendMessage("§7|");
+    sender.sendMessage("§7|   §aVersion:       §7" + description.getVersion());
+    sender.sendMessage("§7|   §aAuthor(s):     §7" + String.join(", ", description.getAuthors()));
+    sender.sendMessage("§7|   §aDescription:   §7" + description.getDescription());
+    sender.sendMessage("§7|_________________________________________");
     return false;
   }
 

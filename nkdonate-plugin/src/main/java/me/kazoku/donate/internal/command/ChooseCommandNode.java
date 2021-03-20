@@ -43,9 +43,9 @@ public class ChooseCommandNode implements CommandNode {
     this.module = TopupModule.getInstance().orElse(null);
     // if no module loaded, empty
     if (module == null) {
-      this.types = Collections.emptyList();
-      this.prices = Collections.emptyList();
-      this.subcommands = Collections.emptyList();
+      this.types = new ArrayList<>();
+      this.prices = new ArrayList<>();
+      this.subcommands = new ArrayList<>();
       return;
     }
     // Card type list
@@ -110,7 +110,7 @@ public class ChooseCommandNode implements CommandNode {
 
   @Override
   public boolean execute(CommandSender sender, String label, String[] args) {
-    if (types.isEmpty()) {
+    if (NKDonatePlugin.getInstance().getModuleManager().getLoadedModules(TopupModule.class).isEmpty()) {
       sender.sendMessage(Messages.NO_TOPUP_MODULE.getValue());
       return false;
     }

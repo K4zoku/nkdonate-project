@@ -26,6 +26,7 @@ public final class Messages extends MemoryPathBundle {
   public static final StringConfigPath DONATE_FAILED = Paths.stringPath("donate-failed", "§cFailed");
   public static final StringConfigPath SERIAL_ENTERED = Paths.stringPath("serial-entered", "§cYou entered serial: {serial}");
   public static final StringConfigPath PIN_ENTERED = Paths.stringPath("pin-entered", "§cYou entered pin: {pin}");
+  public static final StringConfigPath CHECKED = Paths.stringPath("checked", "§aChecked {0} cards in queue");
 
 
   // flexible file

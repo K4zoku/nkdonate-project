@@ -111,4 +111,8 @@ public class CardQueue {
   public void save() {
     saveToFile(file);
   }
+
+  public Collection<Card> toCollection() {
+    return Collections.unmodifiableCollection(queue);
+  }
 }

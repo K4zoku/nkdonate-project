@@ -2,8 +2,12 @@ package me.kazoku.donate.internal.command;
 
 import me.kazoku.artxe.bukkit.command.extra.CommandNode;
 import me.kazoku.donate.NKDonatePlugin;
+import me.kazoku.donate.modular.topup.object.Card;
+import me.kazoku.donate.modular.topup.object.CardQueue;
+import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -36,7 +40,11 @@ public class CheckCommandNode implements CommandNode {
 
   @Override
   public boolean execute(CommandSender sender, String label, String[] args) {
-    NKDonatePlugin.getInstance().getQueue().checkAll();
+    CardQueue queue = NKDonatePlugin.getInstance().getQueue();
+    Collection<Card> cardCollection = queue.toCollection();
+    int size = cardCollection.size();
+    queue.checkAll();
+    sender.sendMessage(ChatColor.GREEN + "Checked " + size + " cards");
     return true;
   }
 }

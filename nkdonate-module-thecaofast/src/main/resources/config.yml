@@ -1,63 +1,63 @@
 APIKey: ''
 APISecret: ''
 
-Period: 1m
+Period: 1200
 
 Card:
   Type:
-    Viettel: 'Viettel'
-    Vinaphone: 'Vinaphone'
-    Mobifone: 'Mobifone'
-    Vietnamobile: 'Vietnamobile'
-    Vcoin: 'Vcoin'
-    Zing: 'Zing'
-    Gate: 'Gate'
-    Garena: 'Garena'
+    viettel: 'Viettel'
+    vinaphone: 'Vinaphone'
+    mobifone: 'Mobifone'
+    vietnamobile: 'Vietnamobile'
+    vcoin: 'Vcoin'
+    zing: 'Zing'
+    gate: 'Gate'
+    garena: 'Garena'
 
   Price:
-    1: '10K'
-    2: '20K'
-    3: '30K'
-    4: '50K'
-    5: '100K'
-    6: '200K'
-    7: '300K'
-    8: '500K'
-    9: '1M'
+    10000: '10K'
+    20000: '20K'
+    30000: '30K'
+    50000: '50K'
+    100000: '100K'
+    200000: '200K'
+    300000: '300K'
+    500000: '500K'
+    1000000: '1M'
 
 RewardProfile: 'profile-0'
 
 Rewards:
   profile-0:
     general:
-      1:
+      10000:
         - 'op:points give {player} 10'
         - 'console:broadcast {player} has just donated 10k!'
-      2:
+      20000:
         - 'op:points give {player} 20'
         - 'console:broadcast {player} has just donated 20k!'
-      3:
+      30000:
         - 'op:points give {player} 30'
         - 'console:broadcast {player} has just donated 30k!'
-      4:
+      50000:
         - 'op:points give {player} 50'
         - 'console:broadcast {player} has just donated 50k!'
-      5:
+      100000:
         - 'op:points give {player} 100'
         - 'console:broadcast {player} has just donated 100k!'
-      6:
+      200000:
         - 'op:points give {player} 200'
         - 'console:broadcast {player} has just donated 200k!'
-      7:
+      300000:
         - 'op:points give {player} 300'
         - 'console:broadcast {player} has just donated 300k!'
-      8:
+      500000:
         - 'op:points give {player} 500'
         - 'console:broadcast {player} has just donated 500k!'
-      9:
+      1000000:
         - 'op:points give {player} 1000'
         - 'console:broadcast {player} has just donated 1m!'
     Viettel:
-      9:
+      1000000:
         - 'op:points give {player} 1100'
         - 'console:broadcast {player} has just donated Viettel 1m and received 1100 points!'

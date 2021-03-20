@@ -1,8 +1,19 @@
-unknown-command: '&cUnknown command'
-unknown-error: '&cAn error occurred!'
-no-permission: '&cYou don''t have permission to do this'
-too-many-args: '&cToo many arguments'
-too-few-args: '&cToo few arguments'
-only-player: '&cOnly player'
-not-a-number: '&f''{0}'' §cis not a number!'
-reloaded: '&aReloaded {type} successfully'
+unknown-command: "§cUnknown command"
+unknown-error: "§cAn error occurred!"
+no-topup-module: "§cThere is no module to handle this!"
+no-permission: "§cNo permission"
+too-many-args: "§cToo many arguments"
+too-few-args: "§cToo few arguments"
+only-player: "§cOnly player"
+reloaded: "§aReloaded {type} successfully"
+not-valid-type: "§f'{0}' §cis not valid card type!"
+enter-card-serial: "§aEnter card serial"
+enter-card-pin: "§aEnter card pin"
+cancelled: "§eCancelled"
+send-success: "§aSuccess, waiting for approval..."
+send-failed: "§cFailed"
+donate-success: "§aSuccess"
+donate-failed: "§cFailed"
+serial-entered: "§cYou entered serial: {serial}"
+pin-entered: "§cYou entered pin: {pin}"
+checked: "§aChecked {0} cards in queue"

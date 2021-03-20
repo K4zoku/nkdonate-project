@@ -1,4 +1,4 @@
-package me.kazoku.donate.module.topup.thesieutoc;
+package me.kazoku.donate.module.topup.thecaofast;
 
 import com.google.gson.JsonObject;
 import me.kazoku.artxe.converter.time.prototype.TickConverter;
@@ -6,13 +6,12 @@ import me.kazoku.donate.NKDonatePlugin;
 import me.kazoku.donate.external.api.NKDonateAPI;
 import me.kazoku.donate.internal.handler.RewardsProfile;
 import me.kazoku.donate.internal.util.file.FileUtils;
-import me.kazoku.donate.internal.util.json.JsonParser;
 import me.kazoku.donate.modular.topup.Response;
 import me.kazoku.donate.modular.topup.TopupModule;
 import me.kazoku.donate.modular.topup.object.Card;
-import net.thesieutoc.api.CardPrice;
-import net.thesieutoc.api.CardType;
-import net.thesieutoc.api.TheSieuTocAPI;
+import net.thecaofast.api.CardPrice;
+import net.thecaofast.api.CardType;
+import net.thecaofast.api.TheCaoFastAPI;
 import org.jetbrains.annotations.NotNull;
 import org.simpleyaml.configuration.Configuration;
 import org.simpleyaml.configuration.ConfigurationSection;
@@ -23,14 +22,14 @@ import java.io.InputStream;
 import java.util.*;
 import java.util.logging.Level;
 
-public class TheSieuTocModule extends TopupModule {
+public class TheCaoFastModule extends TopupModule {
 
   private static final RewardsProfile rewards = new RewardsProfile();
   private static final List<Card.Type> CARD_TYPES = new ArrayList<>();
   private static final List<Card.Price> CARD_PRICES = new ArrayList<>();
   private File configFile;
-  private TheSieuTocAPI theSieuTocApi;
-  private long period = 1200L;
+  private TheCaoFastAPI api;
+  private long period;
 
   @Override
   public boolean onPreStartup() {
@@ -41,9 +40,9 @@ public class TheSieuTocModule extends TopupModule {
 
   @Override
   public void onStartup() {
-    NKDonatePlugin.getInstance().getDebugLogger().debug("[TST] Running checking task...");
+    NKDonatePlugin.getInstance().getDebugLogger().debug("[TCF] Running checking task...");
     NKDonateAPI.runAsyncTimerTask(NKDonatePlugin.getInstance().getQueue()::checkAll, 0, period);
-    NKDonatePlugin.getInstance().getDebugLogger().debug(() -> "[TST] Period: " + period);
+    NKDonatePlugin.getInstance().getDebugLogger().debug(() -> "[TCF] Period: " + period);
   }
 
   private void saveDefaults() {
@@ -70,7 +69,7 @@ public class TheSieuTocModule extends TopupModule {
       return false;
     }
 
-    theSieuTocApi = new TheSieuTocAPI(apiKey, apiSecret);
+    api = new TheCaoFastAPI(apiKey, apiSecret, getModuleManager().getLogger());
 
     if (!rewardProfile.isEmpty()) rewards.load(config.getConfigurationSection("Rewards." + rewardProfile));
 
@@ -89,38 +88,27 @@ public class TheSieuTocModule extends TopupModule {
         .forEach(price -> Optional.ofNullable(priceSection.getString(price.getValue()))
             .map(price::toGenericPrice)
             .ifPresent(CARD_PRICES::add));
+
     return true;
   }
 
   @NotNull
   @Override
   public Response sendCard(Card card) {
-    JsonObject json = JsonParser.parseString(theSieuTocApi.createTransaction(
-        card.getType().getValue(),
-        card.getPrice().getValue(),
-        card.getSerial(),
-        card.getPin()
-    )).getAsJsonObject();
-    boolean success = json.get("status").getAsString().equals("00");
+    JsonObject json = api.createTransaction(
+        card.getType().getValue(), card.getPrice().getValue(),
+        card.getSerial(), card.getPin()
+    );
+    boolean success = json.get("status").getAsInt() == 201;
     if (success) card.updateId(json.get("transaction_id")::getAsString);
     return new Response(success, json.get("msg").getAsString());
   }
 
   @Override
   public void checkCard(Card card) {
-    JsonObject json = JsonParser.parseString(theSieuTocApi.checkTransaction(card.getId())).getAsJsonObject();
-    Card.Status status;
-    switch (json.get("status").getAsString()) {
-      case "00":
-        status = Card.Status.SUCCESS;
-        break;
-      case "-9":
-        status = Card.Status.AWAITING;
-        break;
-      default:
-        status = Card.Status.FAILED;
-        break;
-    }
+    JsonObject json = api.checkTransaction(card.getId());
+    int code = json.get("status").getAsInt();
+    Card.Status status = code == 200 ? Card.Status.SUCCESS : code == 201 ? Card.Status.AWAITING : Card.Status.FAILED;
     card.updateStatus(status, json.get("msg").getAsString());
   }
 

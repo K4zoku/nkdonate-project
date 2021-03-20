@@ -12,7 +12,9 @@ public class CommandUtils {
   }
 
   public static void dispatchCommand(String command) {
-    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
+    Bukkit.getScheduler().runTask(NKDonatePlugin.getInstance(),
+        () -> Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command)
+    );
   }
 
   public static void dispatchCommand(UUID playerId, String command, boolean op) {
@@ -20,10 +22,9 @@ public class CommandUtils {
   }
 
   private static void dispatchCommand(Player player, String command, boolean op) {
+    if (player == null) return;
     final boolean playerOp = player.isOp();
     if (!playerOp && op) player.setOp(true);
-    // TODO: Add external placeholder replacer
-    command = NKDonatePlugin.getPlaceholderCache().apply(command, "player", player.getName());
     player.chat('/' + command);
     player.setOp(playerOp);
   }

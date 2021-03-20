@@ -1,5 +1,19 @@
-unknown-command: '&cLệnh không xác định'
-too-many-args: '&cThừa tham số'
-too-few-args: '&cThiếu tham số'
-unknown-error: '&cCó lỗi xảy ra!'
-no-permission: '&cKhông có quyền'
+unknown-command: "§cLệnh không xác định"
+unknown-error: "§cĐã có lỗi xảy ra!"
+no-topup-module: "§cKhông có module nạp thẻ nào cả!"
+no-permission: "§cBạn không có quyền"
+too-many-args: "§cThừa tham số"
+too-few-args: "§cThiếu tham số"
+only-player: "§cBạn phải là người chơi mới có thể dùng lệnh này"
+reloaded: "§aNạp lại {type} thành công"
+not-valid-type: "§f'{0}' §ckhông phải loại thẻ đúng!"
+enter-card-serial: "§aNhập số seri: "
+enter-card-pin: "§aNhập mã thẻ"
+cancelled: "§eĐã hủy"
+send-success: "§aThành công, đợi duyệt thẻ..."
+send-failed: "§cGửi thẻ thất bại"
+donate-success: "§aNạp thành công"
+donate-failed: "§cNạp thất bại"
+serial-entered: "§cBạn đã nhập số seri: {serial}"
+pin-entered: "§cBạn đã nhập mã thẻ: {pin}"
+checked: "§aĐã kiểm tra {0} thẻ trong hàng chờ"

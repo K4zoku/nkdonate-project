@@ -14,11 +14,6 @@ public final class MainCommandNode implements CommandNode {
   private static final MainCommandNode instance = new MainCommandNode();
   private static final String LABEL = "nkdonate";
   private static final List<String> ALIASES = Arrays.asList("donate", "napthe");
-  private static final List<CommandNode> SUBCOMMANDS = Arrays.asList(
-      InfoCommandNode.getInstance(), ModulesCommandNode.getInstance(),
-      ReloadCommandNode.getInstance(), ChooseCommandNode.getInstance(),
-      CheckCommandNode.getInstance()
-  );
 
   private MainCommandNode() {
   }
@@ -39,7 +34,11 @@ public final class MainCommandNode implements CommandNode {
 
   @Override
   public List<CommandNode> subCommands() {
-    return SUBCOMMANDS;
+    return Arrays.asList(
+        InfoCommandNode.getInstance(), ModulesCommandNode.getInstance(),
+        ReloadCommandNode.getInstance(), ChooseCommandNode.getInstance(),
+        CheckCommandNode.getInstance()
+    );
   }
 
   @Override
@@ -54,6 +53,6 @@ public final class MainCommandNode implements CommandNode {
 
   @Override
   public boolean execute(CommandSender sender, String label, String[] args) {
-    return sender instanceof Player ? ChooseCommandNode.getInstance().handle(sender, label) : InfoCommandNode.getInstance().handle(sender, label);
+    return sender instanceof Player ? ChooseCommandNode.getInstance().execute(sender, label, args) : InfoCommandNode.getInstance().execute(sender, label, args);
   }
 }
