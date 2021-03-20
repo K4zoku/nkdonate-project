@@ -1,4 +1,4 @@
-package net.thesieutoc.api;
+package com.doicardnhanh.api;
 
 import me.kazoku.donate.modular.topup.object.Card;
 import org.jetbrains.annotations.NotNull;
@@ -7,15 +7,15 @@ import java.util.Arrays;
 import java.util.Optional;
 
 public enum CardPrice {
-  VND_10K("1", 10000),
-  VND_20K("2", 20000),
-  VND_30K("3", 30000),
-  VND_50K("4", 50000),
-  VND_100K("5", 100000),
-  VND_200K("6", 200000),
-  VND_300K("7", 300000),
-  VND_500K("8", 500000),
-  VND_1000K("9", 1000000),
+  VND_10K("10000", 10000),
+  VND_20K("20000", 20000),
+  VND_30K("30000", 30000),
+  VND_50K("50000", 50000),
+  VND_100K("100000", 100000),
+  VND_200K("200000", 200000),
+  VND_300K("300000", 300000),
+  VND_500K("500000", 500000),
+  VND_1000K("1000000", 1000000),
   ;
 
   private final String value;

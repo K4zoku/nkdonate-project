@@ -1,4 +1,4 @@
-package net.thesieutoc.api;
+package com.doicardnhanh.api;
 
 import me.kazoku.donate.modular.topup.object.Card;
 import org.jetbrains.annotations.NotNull;

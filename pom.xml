@@ -12,6 +12,7 @@
         <module>nkdonate-module-thesieutoc</module>
         <module>nkdonate-api</module>
         <module>nkdonate-module-thecaofast</module>
+        <module>nkdonate-module-doicardnhanh</module>
     </modules>
     <packaging>pom</packaging>
     <name>NKDonate</name>

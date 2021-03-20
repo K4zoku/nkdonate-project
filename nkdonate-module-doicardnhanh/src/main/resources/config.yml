@@ -1,0 +1,61 @@
+PartnerID: ''
+PartnerKey: ''
+
+Period: 1m
+
+Card:
+  Type:
+    16: 'Viettel'
+    12: 'Vinaphone'
+    11: 'Mobifone'
+    27: 'Vietnamobile'
+    28: 'Zing'
+    29: 'Gate'
+
+  Price:
+    10000: '10K'
+    20000: '20K'
+    30000: '30K'
+    50000: '50K'
+    100000: '100K'
+    200000: '200K'
+    300000: '300K'
+    500000: '500K'
+    1000000: '1M'
+
+  RewardProfile: 'profile-0'
+
+  Rewards:
+    profile-0:
+      general:
+        10000:
+          - 'op:points give {player} 10'
+          - 'console:broadcast {player} has just donated 10k!'
+        20000:
+          - 'op:points give {player} 20'
+          - 'console:broadcast {player} has just donated 20k!'
+        30000:
+          - 'op:points give {player} 30'
+          - 'console:broadcast {player} has just donated 30k!'
+        50000:
+          - 'op:points give {player} 50'
+          - 'console:broadcast {player} has just donated 50k!'
+        100000:
+          - 'op:points give {player} 100'
+          - 'console:broadcast {player} has just donated 100k!'
+        200000:
+          - 'op:points give {player} 200'
+          - 'console:broadcast {player} has just donated 200k!'
+        300000:
+          - 'op:points give {player} 300'
+          - 'console:broadcast {player} has just donated 300k!'
+        500000:
+          - 'op:points give {player} 500'
+          - 'console:broadcast {player} has just donated 500k!'
+        1000000:
+          - 'op:points give {player} 1000'
+          - 'console:broadcast {player} has just donated 1m!'
+      16:
+        1000000:
+          - 'op:points give {player} 1100'
+          - 'console:broadcast {player} has just donated Viettel 1m and received 1100 points!'

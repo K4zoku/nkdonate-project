@@ -1,5 +1,8 @@
-package me.kazoku.donate.module.topup.thesieutoc;
+package me.kazoku.donate.module.topup.doicardnhanh;
 
+import com.doicardnhanh.api.CardPrice;
+import com.doicardnhanh.api.CardType;
+import com.doicardnhanh.api.TheSieuTocAPI;
 import com.google.gson.JsonObject;
 import me.kazoku.artxe.converter.time.prototype.TickConverter;
 import me.kazoku.donate.NKDonatePlugin;
@@ -10,9 +13,6 @@ import me.kazoku.donate.internal.util.json.JsonParser;
 import me.kazoku.donate.modular.topup.Response;
 import me.kazoku.donate.modular.topup.TopupModule;
 import me.kazoku.donate.modular.topup.object.Card;
-import net.thesieutoc.api.CardPrice;
-import net.thesieutoc.api.CardType;
-import net.thesieutoc.api.TheSieuTocAPI;
 import org.jetbrains.annotations.NotNull;
 import org.simpleyaml.configuration.Configuration;
 import org.simpleyaml.configuration.ConfigurationSection;
