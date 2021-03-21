@@ -4,7 +4,6 @@ import me.kazoku.artxe.bukkit.chat.v2.ChatInputAPI;
 import me.kazoku.artxe.bukkit.command.extra.CommandFeedback;
 import me.kazoku.artxe.bukkit.command.extra.CommandNode;
 import me.kazoku.artxe.bukkit.command.extra.SimpleCommandNode;
-import me.kazoku.artxe.utils.PlaceholderCache;
 import me.kazoku.donate.NKDonatePlugin;
 import me.kazoku.donate.internal.data.GeneralSettings;
 import me.kazoku.donate.internal.data.Messages;
@@ -34,10 +33,9 @@ public class ChooseCommandNode implements CommandNode {
 
   private ChooseCommandNode() {
     final NKDonatePlugin main = NKDonatePlugin.getInstance();
-    final PlaceholderCache placeholderCache = NKDonatePlugin.getPlaceholderCache();
     // type feedback
     this.feedback = main.customFeedback();
-    feedback.INVALID_COMMAND.setFeedback(placeholderCache.apply(Messages.NVT.getValue(), "0", "%arg%"));
+    feedback.INVALID_COMMAND.setFeedback(() -> NKDonatePlugin.getPlaceholderCache().apply(Messages.NVT.getValue(), "0", "%arg%"));
 
     // get module
     this.module = TopupModule.getInstance().orElse(null);
@@ -55,7 +53,7 @@ public class ChooseCommandNode implements CommandNode {
 
     this.prices = module.getCardPrices();
     final CommandFeedback priceFeedback = main.customFeedback();
-    priceFeedback.INVALID_COMMAND.setFeedback(placeholderCache.apply(Messages.NVT.getValue(), "0", "%arg%"));
+    priceFeedback.INVALID_COMMAND.setFeedback(() -> NKDonatePlugin.getPlaceholderCache().apply(Messages.NVT.getValue(), "0", "%arg%"));
     for (Card.Type type : types) {
       SimpleCommandNode typeNode = new SimpleCommandNode(
           type.getValue(),

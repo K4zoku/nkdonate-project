@@ -53,6 +53,7 @@ public final class Messages extends MemoryPathBundle {
       save = true;
     }
     instance = new Messages(file);
+    instance.load();
     if (save) instance.save();
     return instance;
   }

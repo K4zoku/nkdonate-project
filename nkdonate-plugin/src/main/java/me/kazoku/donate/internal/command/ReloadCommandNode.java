@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.UnaryOperator;
 
 public final class ReloadCommandNode implements CommandNode {
 
@@ -24,16 +25,18 @@ public final class ReloadCommandNode implements CommandNode {
 
   private ReloadCommandNode() {
     this.feedback = NKDonatePlugin.getInstance().customFeedback();
-    final String reloadMsg = Messages.RELOADED.getValue();
-    final PlaceholderCache pc = NKDonatePlugin.getPlaceholderCache();
-    final String reloadAllMsg = pc.apply(reloadMsg, "type", "ALL");
-    this.feedback.COMMAND_SUCCESS.setFeedback(reloadAllMsg);
+    final UnaryOperator<String> reloadAllMsg = type -> {
+      final PlaceholderCache pc = NKDonatePlugin.getPlaceholderCache();
+      final String reloadMsg = Messages.RELOADED.getValue();
+      return pc.apply(reloadMsg, "type", type);
+    };
+    this.feedback.COMMAND_SUCCESS.setFeedback(() -> reloadAllMsg.apply("ALL"));
     CommandNode reloadAll = new SimpleCommandNode(
         "all",
         "nkdonate.admin.reload.all",
         this::execute
     );
-    reloadAll.feedback().COMMAND_SUCCESS.setFeedback(reloadAllMsg);
+    reloadAll.feedback().COMMAND_SUCCESS.setFeedback(() -> reloadAllMsg.apply("ALL"));
     CommandNode reloadSettings = new SimpleCommandNode(
         "settings",
         "setting",
@@ -44,7 +47,7 @@ public final class ReloadCommandNode implements CommandNode {
           return true;
         }
     );
-    reloadSettings.feedback().COMMAND_SUCCESS.setFeedback(pc.apply(reloadMsg, "type", "SETTINGS"));
+    reloadSettings.feedback().COMMAND_SUCCESS.setFeedback(() -> reloadAllMsg.apply("SETTINGS"));
     CommandNode reloadLanguages = new SimpleCommandNode(
         "language",
         Arrays.asList("lang", "languages"),
@@ -54,7 +57,7 @@ public final class ReloadCommandNode implements CommandNode {
           return true;
         }
     );
-    reloadLanguages.feedback().COMMAND_SUCCESS.setFeedback(pc.apply(reloadMsg, "type", "LANGUAGES"));
+    reloadLanguages.feedback().COMMAND_SUCCESS.setFeedback(() -> reloadAllMsg.apply("LANGUAGES"));
     CommandNode reloadMessages = new SimpleCommandNode(
         "messages",
         Arrays.asList("message", "msg"),
@@ -64,7 +67,7 @@ public final class ReloadCommandNode implements CommandNode {
           return true;
         }
     );
-    reloadMessages.feedback().COMMAND_SUCCESS.setFeedback(pc.apply(reloadMsg, "type", "MESSAGES"));
+    reloadMessages.feedback().COMMAND_SUCCESS.setFeedback(() -> reloadAllMsg.apply("MESSAGES"));
     CommandNode reloadUi = new SimpleCommandNode(
         "ui",
         "nkdonate.admin.reload.ui",
@@ -73,7 +76,7 @@ public final class ReloadCommandNode implements CommandNode {
           return true;
         }
     );
-    reloadUi.feedback().COMMAND_SUCCESS.setFeedback(pc.apply(reloadMsg, "type", "UI"));
+    reloadUi.feedback().COMMAND_SUCCESS.setFeedback(() -> reloadAllMsg.apply("UI"));
 
     List<CommandNode> nodes = new ArrayList<>();
     nodes.add(reloadAll);
@@ -128,9 +131,16 @@ public final class ReloadCommandNode implements CommandNode {
 
   @Override
   public boolean execute(CommandSender sender, String label, String[] args) {
+    final String locale = GeneralSettings.LOCALE.getValue();
     GeneralSettings.softReload();
-    Messages.softReload();
-    UISettings.softReload();
+    final String newLocale = GeneralSettings.LOCALE.getValue();
+    if (locale.equals(newLocale)) {
+      Messages.softReload();
+      UISettings.softReload();
+    } else {
+      Messages.hardReload();
+      UISettings.hardReload();
+    }
     return true;
   }
 }
