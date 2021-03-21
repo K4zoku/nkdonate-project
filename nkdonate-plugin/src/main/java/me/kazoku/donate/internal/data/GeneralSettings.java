@@ -2,6 +2,7 @@ package me.kazoku.donate.internal.data;
 
 import me.kazoku.artxe.configuration.path.CommentablePath;
 import me.kazoku.artxe.configuration.path.prototype.Paths;
+import me.kazoku.donate.NKDonatePlugin;
 
 import java.io.File;
 import java.util.Arrays;
@@ -60,6 +61,7 @@ public final class GeneralSettings extends MemoryPathBundle {
   public static void softReload() {
     if (GENERAL_SETTINGS_FILE.exists()) getInstance().getConfig().reloadConfig();
     else hardReload();
+    NKDonatePlugin.getInstance().getDebugLogger().setDebug(GeneralSettings.DEBUG.getValue());
   }
 
 }

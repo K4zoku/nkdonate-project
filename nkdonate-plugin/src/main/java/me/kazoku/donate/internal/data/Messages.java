@@ -1,7 +1,9 @@
 package me.kazoku.donate.internal.data;
 
+import me.kazoku.artxe.configuration.general.Config;
 import me.kazoku.artxe.configuration.path.prototype.Paths;
 import me.kazoku.artxe.configuration.path.prototype.StringConfigPath;
+import me.kazoku.donate.internal.util.bukkit.ChatColorUtils;
 
 import java.io.File;
 import java.util.function.Supplier;
@@ -60,7 +62,10 @@ public final class Messages extends MemoryPathBundle {
   }
 
   public static void softReload() {
-    if (MESSAGES_FILE.get().exists()) getInstance().getConfig().reloadConfig();
-    else hardReload();
+    if (MESSAGES_FILE.get().exists()) {
+      final Config config = getInstance().getConfig();
+      config.reloadConfig();
+      ChatColorUtils.colorize(config.getConfig());
+    } else hardReload();
   }
 }
