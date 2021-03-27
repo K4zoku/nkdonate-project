@@ -1,0 +1,4 @@
+name: Nap1s
+version: 1.0.0
+author: [ kazoku ]
+main: me.kazoku.donate.module.topup.nap1s.Nap1sModule

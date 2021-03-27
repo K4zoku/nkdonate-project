@@ -22,6 +22,7 @@ import org.simpleyaml.configuration.serialization.ConfigurationSerialization;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Optional;
 import java.util.logging.Level;
@@ -119,6 +120,7 @@ public final class NKDonatePlugin extends ShellPlugin {
       getModuleManager().enableModules();
       getModuleManager().callPostEnable();
       ChooseCommandNode.reload();
+      getTopupModule().ifPresent(t -> getDebugLogger().debug(t.getDisplayName()));
       getLogger().info(getModuleManager()::printListToString);
     });
   }
@@ -126,10 +128,14 @@ public final class NKDonatePlugin extends ShellPlugin {
   public Optional<TopupModule> getTopupModule() {
     Map<String, TopupModule> topupModules = getModuleManager().getLoadedModules(TopupModule.class);
     if (topupModules.isEmpty()) return Optional.empty();
-    String name = GeneralSettings.ENABLED_TOPUP_MODULE.getValue();
-    return name.isEmpty()
-        ? Optional.of(topupModules.values().iterator().next())
-        : Optional.ofNullable(topupModules.get(name));
+    final String name = GeneralSettings.ENABLED_TOPUP_MODULE.getValue();
+
+    if (!name.isEmpty()) return Optional.ofNullable(topupModules.get(name));
+
+    final Iterator<TopupModule> iterator = topupModules.values().iterator();
+    final TopupModule first = iterator.next();
+    while (iterator.hasNext()) getModuleManager().disableModule(iterator.next().getName(), true);
+    return Optional.of(first);
   }
 
   public CardQueue getQueue() {

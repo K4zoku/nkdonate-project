@@ -1,6 +1,9 @@
-package me.kazoku.donate.module.topup.thecaofast;
+package me.kazoku.donate.module.topup.nap1s;
 
 import com.google.gson.JsonObject;
+import com.nap1s.api.CardPrice;
+import com.nap1s.api.CardType;
+import com.nap1s.api.TheCaoFastAPI;
 import me.kazoku.artxe.converter.time.prototype.TickConverter;
 import me.kazoku.donate.NKDonatePlugin;
 import me.kazoku.donate.external.api.NKDonateAPI;
@@ -9,9 +12,6 @@ import me.kazoku.donate.internal.util.file.FileUtils;
 import me.kazoku.donate.modular.topup.Response;
 import me.kazoku.donate.modular.topup.TopupModule;
 import me.kazoku.donate.modular.topup.object.Card;
-import net.thecaofast.api.CardPrice;
-import net.thecaofast.api.CardType;
-import net.thecaofast.api.TheCaoFastAPI;
 import org.jetbrains.annotations.NotNull;
 import org.simpleyaml.configuration.Configuration;
 import org.simpleyaml.configuration.ConfigurationSection;

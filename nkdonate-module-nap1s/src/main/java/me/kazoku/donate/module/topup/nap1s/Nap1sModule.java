@@ -1,15 +1,14 @@
-package me.kazoku.donate.module.topup.doicardnhanh;
+package me.kazoku.donate.module.topup.nap1s;
 
-import com.doicardnhanh.api.CardPrice;
-import com.doicardnhanh.api.CardType;
-import com.doicardnhanh.api.DoiCardNhanhAPI;
 import com.google.gson.JsonObject;
+import com.nap1s.api.CardPrice;
+import com.nap1s.api.CardType;
+import com.nap1s.api.Nap1SAPI;
 import me.kazoku.artxe.converter.time.prototype.TickConverter;
 import me.kazoku.donate.NKDonatePlugin;
 import me.kazoku.donate.external.api.NKDonateAPI;
 import me.kazoku.donate.internal.handler.RewardsProfile;
 import me.kazoku.donate.internal.util.file.FileUtils;
-import me.kazoku.donate.internal.util.json.JsonParser;
 import me.kazoku.donate.modular.topup.Response;
 import me.kazoku.donate.modular.topup.TopupModule;
 import me.kazoku.donate.modular.topup.object.Card;
@@ -23,14 +22,14 @@ import java.io.InputStream;
 import java.util.*;
 import java.util.logging.Level;
 
-public class DoiCardNhanhModule extends TopupModule {
+public class Nap1sModule extends TopupModule {
 
   private static final RewardsProfile rewards = new RewardsProfile();
   private static final List<Card.Type> CARD_TYPES = new ArrayList<>();
   private static final List<Card.Price> CARD_PRICES = new ArrayList<>();
   private File configFile;
-  private DoiCardNhanhAPI api;
-  private long period = 1200L;
+  private Nap1SAPI api;
+  private long period;
 
   @Override
   public boolean onPreStartup() {
@@ -41,9 +40,9 @@ public class DoiCardNhanhModule extends TopupModule {
 
   @Override
   public void onStartup() {
-    NKDonatePlugin.getInstance().getDebugLogger().debug("[DCN] Running checking task...");
+    NKDonatePlugin.getInstance().getDebugLogger().debug("[N1S] Running checking task...");
     NKDonateAPI.runAsyncTimerTask(NKDonatePlugin.getInstance().getQueue()::checkAll, 0, period);
-    NKDonatePlugin.getInstance().getDebugLogger().debug(() -> "[DCN] Period: " + period);
+    NKDonatePlugin.getInstance().getDebugLogger().debug(() -> "[N1S] Period: " + period);
   }
 
   private void saveDefaults() {
@@ -61,16 +60,15 @@ public class DoiCardNhanhModule extends TopupModule {
 
   private boolean loadConfig() {
     final Configuration config = getConfig();
-    final String partnerID = config.getString("PartnerID", "");
-    final String partnerKey = config.getString("PartnerKey", "");
+    final String apiKey = config.getString("APIKey", "");
     final String rewardProfile = config.getString("RewardProfile", "");
 
-    if (partnerID.isEmpty() || partnerKey.isEmpty()) {
+    if (apiKey.isEmpty()) {
       getModuleManager().getLogger().log(Level.WARNING, "Missing API information, disabling...");
       return false;
     }
 
-    api = new DoiCardNhanhAPI(partnerID, partnerKey);
+    api = new Nap1SAPI(apiKey, getModuleManager().getLogger());
 
     if (!rewardProfile.isEmpty()) rewards.load(config.getConfigurationSection("Rewards." + rewardProfile));
 
@@ -89,38 +87,27 @@ public class DoiCardNhanhModule extends TopupModule {
         .forEach(price -> Optional.ofNullable(priceSection.getString(price.getValue()))
             .map(price::toGenericPrice)
             .ifPresent(CARD_PRICES::add));
+
     return true;
   }
 
   @NotNull
   @Override
   public Response sendCard(Card card) {
-    JsonObject json = JsonParser.parseString(api.createTransaction(
-        card.getType().getValue(),
-        card.getPrice().getValue(),
-        card.getSerial(),
-        card.getPin()
-    )).getAsJsonObject();
-    boolean success = json.get("status").getAsString().equals("0");
-    if (success) card.updateId(json.get("transaction_id")::getAsString);
+    JsonObject json = api.createTransaction(
+        card.getType().getValue(), card.getPrice().getValue(),
+        card.getSerial(), card.getPin()
+    );
+    boolean success = json.get("status").getAsString().equals("success");
+    if (success) card.updateId(json.get("transactionId")::getAsString);
     return new Response(success, json.get("msg").getAsString());
   }
 
   @Override
   public void checkCard(Card card) {
-    JsonObject json = JsonParser.parseString(api.checkTransaction(card.getId())).getAsJsonObject();
-    Card.Status status;
-    switch (json.get("status").getAsString()) {
-      case "0":
-        status = Card.Status.SUCCESS;
-        break;
-      case "2":
-        status = Card.Status.AWAITING;
-        break;
-      default:
-        status = Card.Status.FAILED;
-        break;
-    }
+    JsonObject json = api.checkTransaction(card.getId());
+    int code = json.get("statusId").getAsInt();
+    Card.Status status = code == 1 ? Card.Status.SUCCESS : code == 0 ? Card.Status.AWAITING : Card.Status.FAILED;
     card.updateStatus(status, json.get("msg").getAsString());
   }
 

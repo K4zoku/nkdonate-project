@@ -1,4 +1,4 @@
-package net.thecaofast.api;
+package com.nap1s.api;
 
 import me.kazoku.donate.modular.topup.object.Card;
 import org.jetbrains.annotations.NotNull;

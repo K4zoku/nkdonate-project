@@ -13,6 +13,7 @@
         <module>nkdonate-api</module>
         <module>nkdonate-module-thecaofast</module>
         <module>nkdonate-module-doicardnhanh</module>
+        <module>nkdonate-module-nap1s</module>
     </modules>
     <packaging>pom</packaging>
     <name>NKDonate</name>
