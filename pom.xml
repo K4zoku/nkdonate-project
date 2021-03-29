@@ -64,6 +64,13 @@
                                     </excludes>
                                 </filter>
                             </filters>
+                            <relocations>
+                                <relocation>
+                                    <pattern>org.simpleyaml</pattern>
+                                    <shadedPattern>me.kazoku.thirdparties.simpleyaml</shadedPattern>
+                                </relocation>
+                            </relocations>
+                            <shadedArtifactAttached>true</shadedArtifactAttached>
                         </configuration>
                     </execution>
                 </executions>
@@ -86,6 +93,10 @@
             <id>sonatype</id>
             <url>https://oss.sonatype.org/content/groups/public/</url>
         </repository>
+        <repository>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
+        </repository>
     </repositories>
 
     <dependencies>
@@ -100,6 +111,16 @@
             <artifactId>annotations</artifactId>
             <version>20.1.0</version>
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>me.kazoku</groupId>
+            <artifactId>artxe-configuration-path</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>me.kazoku</groupId>
+            <artifactId>artxe-configuration-yaml</artifactId>
+            <version>1.0-SNAPSHOT</version>
         </dependency>
     </dependencies>
 
