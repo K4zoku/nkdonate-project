@@ -71,7 +71,7 @@ public abstract class NKModule extends Module {
   }
 
   @Override
-  public final boolean onLoad() {
+  public boolean onLoad() {
     verify();
     return onPreStartup();
   }

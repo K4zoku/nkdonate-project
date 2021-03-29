@@ -180,7 +180,7 @@ public class ChooseCommandNode implements CommandNode {
 
     if (response.isSuccess()) {
       final NKDonatePlugin main = NKDonatePlugin.getInstance();
-      main.getDebugLogger().debug(String.format("Player %s has submitted a card: %s", player.getName(), card));
+      main.getDebugLogger().debug(() -> String.format("Player %s has submitted a card: %s", player.getName(), card));
       main.getQueue().add(card);
       messages.add(Messages.SEND_SUCCESS.getValue());
     } else {

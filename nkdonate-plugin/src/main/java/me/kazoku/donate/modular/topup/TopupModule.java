@@ -1,6 +1,7 @@
 package me.kazoku.donate.modular.topup;
 
 import me.kazoku.donate.NKDonatePlugin;
+import me.kazoku.donate.internal.data.GeneralSettings;
 import me.kazoku.donate.internal.handler.RewardsProfile;
 import me.kazoku.donate.modular.NKModule;
 import me.kazoku.donate.modular.topup.object.Card;
@@ -10,6 +11,15 @@ import java.util.List;
 import java.util.Optional;
 
 public abstract class TopupModule extends NKModule {
+
+  @Override
+  public final boolean onLoad() {
+    super.onLoad();
+    String enabledModule = GeneralSettings.ENABLED_TOPUP_MODULE.getValue();
+    return enabledModule.equals(getName()) ||
+        (enabledModule.isEmpty() && NKDonatePlugin.getInstance().getModuleManager().getLoadedModules(TopupModule.class).isEmpty());
+
+  }
 
   public static Optional<TopupModule> getInstance() {
     return NKDonatePlugin.getInstance().getTopupModule();
