@@ -1,6 +1,4 @@
 # Project exclude paths
-/nkdonate-module-thesieutoc/target/
-/nkdonate-plugin/target/
-/target/
-/.idea/
+target
+.idea
 *.iml
