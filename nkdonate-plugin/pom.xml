@@ -42,8 +42,12 @@
                             <createDependencyReducedPom>true</createDependencyReducedPom>
                             <relocations>
                                 <relocation>
-                                    <pattern>org</pattern>
-                                    <shadedPattern>libs.org</shadedPattern>
+                                    <pattern>org.simpleyaml</pattern>
+                                    <shadedPattern>libs.simpleyaml</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>org.yaml.snakeyaml</pattern>
+                                    <shadedPattern>libs.snakeyaml</shadedPattern>
                                 </relocation>
                             </relocations>
                         </configuration>
